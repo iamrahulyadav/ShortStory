@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1031548513007",
+    "firebase_url": "https://short-story-c4712.firebaseio.com",
+    "project_id": "short-story-c4712",
+    "storage_bucket": "short-story-c4712.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031548513007:android:5f931105c3587f56",
+        "android_client_info": {
+          "package_name": "app.story.craftystudio.shortstory"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1031548513007-catpd0o6qhme4k2m9reqai2m15pb305q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0re60dPuxTp2nnSwQD38_7PgsaVrKGt4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
