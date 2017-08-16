@@ -2,11 +2,16 @@ package app.story.craftystudio.shortstory;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.text.Spannable;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
@@ -15,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.Button;
 
 import android.speech.tts.TextToSpeech;
@@ -25,15 +31,22 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.ShortDynamicLink;
 
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
+import com.gordonwong.materialsheetfab.MaterialSheetFab;
+import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
+import com.sackcentury.shinebuttonlib.ShineButton;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import utils.FireBaseHandler;
+import utils.Like;
 import utils.Story;
 import utils.StoryWordMeaning;
 
@@ -48,18 +61,38 @@ public class ShortStoryFragment extends Fragment {
     private Story story;
 
     TextView descriptionText;
-    TextView wordMeaningTextview;
 
     static MainActivity mainActivity;
     TextToSpeech tts;
 
+    static boolean mNightModeOn = false;
 
-    public static ShortStoryFragment newInstance(Story story, MainActivity context) {
+    static SharedPreferences prefs;
+    TextView titleText;
+    TextView bookLinkText;
+    TextView storyAuthorNameText;
+    TextView storyGenreText;
+    TextView storyTagText;
+    TextView storyDateText;
+    TextView wordMeaningTextview;
+    CardView itemHolderCardview;
+
+    TextView bookNameText;
+    TextView storyLikesText;
+
+    boolean isDarkNightModeOn = false;
+    boolean isSepiaNightModeOn = false;
+
+    public static ShortStoryFragment newInstance(Story story, MainActivity context, boolean nightMode) {
         mainActivity = context;
+        mNightModeOn = nightMode;
         ShortStoryFragment fragment = new ShortStoryFragment();
         Bundle args = new Bundle();
         args.putSerializable("Story", story);
         fragment.setArguments(args);
+        prefs = mainActivity.getSharedPreferences(
+                "app.story.craftystudio.shortstory", Context.MODE_PRIVATE);
+
         return fragment;
     }
 
@@ -69,6 +102,23 @@ public class ShortStoryFragment extends Fragment {
         if (getArguments() != null) {
             this.story = (Story) getArguments().getSerializable("Story");
         }
+
+        boolean darkNightModepref = prefs.getBoolean("DarkNightModeOn", false);
+        boolean sepiaNightModepref = prefs.getBoolean("SepiaNightModeOn", false);
+
+        if (darkNightModepref) {
+            Toast.makeText(mainActivity, "dark night mode ON", Toast.LENGTH_SHORT).show();
+            isDarkNightModeOn = true;
+            // onDarkNightMode();
+        }
+
+        if (sepiaNightModepref) {
+            isSepiaNightModeOn = true;
+            // onSepiaNightMode();
+            Toast.makeText(mainActivity, "Sepia night mode ON", Toast.LENGTH_SHORT).show();
+        }
+
+
     }
 
     @Nullable
@@ -78,42 +128,45 @@ public class ShortStoryFragment extends Fragment {
         //initializeView
 
 
-        TextView titleText = (TextView) view.findViewById(R.id.fragmentShortStory_title_textView);
+        titleText = (TextView) view.findViewById(R.id.fragmentShortStory_title_textView);
         titleText.setText(story.getStoryTitle());
 
         descriptionText = (TextView) view.findViewById(R.id.fragmentShortStory_description_textView);
         init(story.getStoryFull());
-        //descriptionText.setText(story.getStoryFull());
 
+        //get wordmeaning of word tap
         wordMeaningTextview = (TextView) view.findViewById(R.id.fragmentShortStory_storyWordMeaning_textView);
 
-        TextView bookNameText = (TextView) view.findViewById(R.id.fragmentShortStory_bookName_textView);
-        bookNameText.setText(story.getStoryBookName());
+        //Name of a book
+        bookNameText = (TextView) view.findViewById(R.id.fragmentShortStory_bookName_textView);
+        bookNameText.setText("Book Name -" + story.getStoryBookName());
 
-        TextView bookLinkText = (TextView) view.findViewById(R.id.fragmentShortStory_bookLink_textView);
-        bookLinkText.setText(story.getStoryBookLink());
+        //link of book to buy
+        bookLinkText = (TextView) view.findViewById(R.id.fragmentShortStory_bookLink_textView);
+        bookLinkText.setText("Get Book From -" + story.getStoryBookLink());
 
-        TextView storyAuthorNameText = (TextView) view.findViewById(R.id.fragmentShortStory_authorName_textView);
-        storyAuthorNameText.setText(story.getStoryAuthorNAme());
+        //name of Author
+        storyAuthorNameText = (TextView) view.findViewById(R.id.fragmentShortStory_authorName_textView);
+        storyAuthorNameText.setText("by " + story.getStoryAuthorNAme());
 
-        TextView storyGenreText = (TextView) view.findViewById(R.id.fragmentShortStory_genre_textView);
+        //story genre
+        storyGenreText = (TextView) view.findViewById(R.id.fragmentShortStory_genre_textView);
         storyGenreText.setText(story.getStoryGenre());
 
-        TextView storyTagText = (TextView) view.findViewById(R.id.fragmentShortStory_tag_textView);
+        //small tag for story
+        storyTagText = (TextView) view.findViewById(R.id.fragmentShortStory_tag_textView);
         storyTagText.setText(story.getStoryTag());
 
-        TextView storyDateText = (TextView) view.findViewById(R.id.fragmentShortStory_storyDate_textView);
+        //date on which story uploaded
+        storyDateText = (TextView) view.findViewById(R.id.fragmentShortStory_storyDate_textView);
         storyDateText.setText(story.getStoryDate());
 
-        Button shareStoryButton = (Button) view.findViewById(R.id.fragmentShortStory_storyShareLink_Button);
-        shareStoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onShareClick();
-            }
-        });
+        storyLikesText = (TextView) view.findViewById(R.id.fragmentShortStory_storyLikes_Textview);
+        storyLikesText.setText(story.getStoryLikes() + "");
 
-        Button readFullStoryButton = (Button) view.findViewById(R.id.fragmentShortStory_storyReadFull_Button);
+
+        //speak full story
+        ImageView readFullStoryButton = (ImageView) view.findViewById(R.id.fragmentShortStory_storyReadFull_Button);
         readFullStoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -121,8 +174,190 @@ public class ShortStoryFragment extends Fragment {
             }
         });
 
+        itemHolderCardview = (CardView) view.findViewById(R.id.fragmentShortStory_MainItemHolder_CardView);
+
+
+        //check which mode is ON and act accordingly
+        if (isSepiaNightModeOn) {
+            onSepiaNightMode();
+        } else if (isDarkNightModeOn) {
+            onDarkNightMode();
+
+        }
+
+        //like button
+        final ShineButton shineLikeButtonJava = (ShineButton) view.findViewById(R.id.like_shine_button);
+
+        shineLikeButtonJava.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(View view, boolean checked) {
+                if (checked) {
+                    Toast.makeText(mainActivity, "ThankYou! for liking the story", Toast.LENGTH_SHORT).show();
+                    uploadLike();
+                }
+            }
+        });
+
+        final ShineButton shineShareButtonJava = (ShineButton) view.findViewById(R.id.share_shine_button);
+
+        shineShareButtonJava.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(View view, boolean checked) {
+                if (checked) {
+                    Toast.makeText(mainActivity, "ThankYou! for Sharing the story", Toast.LENGTH_SHORT).show();
+                    onShareClick();
+                }
+            }
+        });
+
+
+        //change for material sheet and changing NIGHT MODE
+        final MaterialSheetFab materialSheetFab;
+        FloatingActionButton fabs = (FloatingActionButton) view.findViewById(R.id.fabs);
+        View sheetView = view.findViewById(R.id.fab_sheet);
+        View overlay = view.findViewById(R.id.overlay);
+        int sheetColor = getResources().getColor(R.color.colorWhiteBg);
+        final int fabColor = getResources().getColor(R.color.colorAccent);
+
+        // Initialize material sheet FAB
+        materialSheetFab = new MaterialSheetFab(fabs, sheetView, overlay,
+                sheetColor, fabColor);
+
+        final TextView sepiaModeOnTextview = (TextView) view.findViewById(R.id.materialSheet_sepiaMode_textview);
+        sepiaModeOnTextview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mainActivity, "Sepia selected", Toast.LENGTH_SHORT).show();
+                materialSheetFab.hideSheet();
+
+                prefs.edit().putBoolean("SepiaNightModeOn", true).apply();
+                prefs.edit().putBoolean("DarkNightModeOn", false).apply();
+                onSepiaNightMode();
+            }
+        });
+
+        final TextView darkModeOnTextview = (TextView) view.findViewById(R.id.materialSheet_darkMode_textview);
+        darkModeOnTextview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mainActivity, "Dark selected", Toast.LENGTH_SHORT).show();
+                materialSheetFab.hideSheet();
+
+                prefs.edit().putBoolean("DarkNightModeOn", true).apply();
+                prefs.edit().putBoolean("SepiaNightModeOn", false).apply();
+
+                onDarkNightMode();
+            }
+        });
+
+        final TextView normalModeOnTextview = (TextView) view.findViewById(R.id.materialSheet_normalMode_textview);
+        normalModeOnTextview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mainActivity, "Normal selected", Toast.LENGTH_SHORT).show();
+                materialSheetFab.hideSheet();
+
+                prefs.edit().putBoolean("DarkNightModeOn", false).apply();
+                prefs.edit().putBoolean("SepiaNightModeOn", false).apply();
+
+                onNormalMode();
+            }
+        });
+        materialSheetFab.setEventListener(new MaterialSheetFabEventListener() {
+            @Override
+            public void onShowSheet() {
+                Toast.makeText(mainActivity, "Sheet open", Toast.LENGTH_SHORT).show();
+                // Called when the material sheet's "show" animation starts.
+            }
+
+            @Override
+            public void onSheetShown() {
+                // Called when the material sheet's "show" animation ends.
+            }
+
+            @Override
+            public void onHideSheet() {
+                // Called when the material sheet's "hide" animation starts.
+            }
+
+            public void onSheetHidden() {
+                Toast.makeText(mainActivity, "Sheet close", Toast.LENGTH_SHORT).show();
+
+                // Called when the material sheet's "hide" animation ends.
+            }
+        });
 
         return view;
+    }
+
+
+    private void onDarkNightMode() {
+
+        itemHolderCardview.setCardBackgroundColor(getResources().getColor(R.color.colorDarkBg));
+        titleText.setTextColor(getResources().getColor(R.color.colorWhiteText));
+        descriptionText.setTextColor(getResources().getColor(R.color.colorWhiteText));
+
+        bookLinkText.setTextColor(getResources().getColor(R.color.colorAccent));
+        bookNameText.setTextColor(getResources().getColor(R.color.colorLightWhiteText));
+        storyAuthorNameText.setTextColor(getResources().getColor(R.color.colorLightWhiteText));
+        storyTagText.setTextColor(getResources().getColor(R.color.colorLightWhiteText));
+        storyGenreText.setTextColor(getResources().getColor(R.color.colorLightWhiteText));
+        storyDateText.setTextColor(getResources().getColor(R.color.colorLightWhiteText));
+        wordMeaningTextview.setTextColor(getResources().getColor(R.color.colorWhiteText));
+
+
+    }
+
+    private void onNormalMode() {
+
+        itemHolderCardview.setCardBackgroundColor(getResources().getColor(R.color.colorWhiteBg));
+        titleText.setTextColor(getResources().getColor(R.color.colorBlueTitle));
+        descriptionText.setTextColor(getResources().getColor(R.color.colorBlackText));
+
+        bookLinkText.setTextColor(getResources().getColor(R.color.colorLightBlackText));
+        bookNameText.setTextColor(getResources().getColor(R.color.colorLightBlackText));
+        storyAuthorNameText.setTextColor(getResources().getColor(R.color.colorLightBlackText));
+        storyTagText.setTextColor(getResources().getColor(R.color.colorLightBlackText));
+        storyGenreText.setTextColor(getResources().getColor(R.color.colorLightBlackText));
+        storyDateText.setTextColor(getResources().getColor(R.color.colorLightBlackText));
+        wordMeaningTextview.setTextColor(getResources().getColor(R.color.colorBlackText));
+
+
+    }
+
+    private void uploadLike() {
+        Like like = new Like();
+        like.setShortStoryID(story.getStoryID());
+        like.setShortStoryTitle(story.getStoryTitle());
+
+        FireBaseHandler fireBaseHandler = new FireBaseHandler();
+        fireBaseHandler.uploadLike(like, new FireBaseHandler.OnLikeListener() {
+            @Override
+            public void onLikeUpload(boolean isSuccessful) {
+
+                if (isSuccessful) {
+
+                }
+            }
+        });
+
+    }
+
+    private void onSepiaNightMode() {
+        itemHolderCardview.setCardBackgroundColor(getResources().getColor(R.color.colorSepiaBg));
+        titleText.setTextColor(getResources().getColor(R.color.colorSepiaText));
+        descriptionText.setTextColor(getResources().getColor(R.color.colorSepiaText));
+
+
+        bookLinkText.setTextColor(getResources().getColor(R.color.colorLightSepiaText));
+        bookNameText.setTextColor(getResources().getColor(R.color.colorLightSepiaText));
+        storyAuthorNameText.setTextColor(getResources().getColor(R.color.colorLightSepiaText));
+        storyTagText.setTextColor(getResources().getColor(R.color.colorLightSepiaText));
+        storyGenreText.setTextColor(getResources().getColor(R.color.colorLightSepiaText));
+        storyDateText.setTextColor(getResources().getColor(R.color.colorLightSepiaText));
+        wordMeaningTextview.setTextColor(getResources().getColor(R.color.colorLightSepiaText));
+
+
     }
 
     private void init(String textToShow) {

@@ -1,5 +1,7 @@
 package app.story.craftystudio.shortstory;
 
+import android.app.UiModeManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,9 +13,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -27,10 +26,13 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
+import com.gordonwong.materialsheetfab.MaterialSheetFab;
+import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 
 import java.util.ArrayList;
 
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity
 
     FireBaseHandler fireBaseHandler;
 
+    static boolean nightMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +59,10 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+
+        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+       /* fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
                 Story story = new Story();
@@ -104,7 +109,10 @@ public class MainActivity extends AppCompatActivity
 
 
             }
-        });
+        });*/
+
+        //upload story
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -118,12 +126,15 @@ public class MainActivity extends AppCompatActivity
         fireBaseHandler = new FireBaseHandler();
         mPager = (ViewPager) findViewById(R.id.mainActivity_viewpager);
 
+
         initializeViewPager();
         openDynamicLink();
 
         //calling rate now dialog
         AppRater appRater = new AppRater();
         appRater.app_launched(MainActivity.this);
+
+
 
     }
 
@@ -170,31 +181,6 @@ public class MainActivity extends AppCompatActivity
                         Log.w("DeepLink", "getDynamicLink:onFailure", e);
                     }
                 });
-    }
-
-    private void downloadStory(String shortStoryUID) {
-
-        fireBaseHandler.downloadStory(shortStoryUID, new FireBaseHandler.OnStorylistener() {
-            @Override
-            public void onStoryDownLoad(Story story, boolean isSuccessful) {
-
-                if (isSuccessful) {
-                    mStoryList.add(story);
-                    mPagerAdapter.notifyDataSetChanged();
-                }
-                downloadStoryList();
-            }
-
-            @Override
-            public void onStoryListDownLoad(ArrayList<Story> storyList, boolean isSuccessful) {
-
-            }
-
-            @Override
-            public void onStoryUpload(boolean isSuccessful) {
-
-            }
-        });
     }
 
 
@@ -264,6 +250,31 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void downloadStory(String shortStoryUID) {
+
+        fireBaseHandler.downloadStory(shortStoryUID, new FireBaseHandler.OnStorylistener() {
+            @Override
+            public void onStoryDownLoad(Story story, boolean isSuccessful) {
+
+                if (isSuccessful) {
+                    mStoryList.add(story);
+                    mPagerAdapter.notifyDataSetChanged();
+                }
+                downloadStoryList();
+            }
+
+            @Override
+            public void onStoryListDownLoad(ArrayList<Story> storyList, boolean isSuccessful) {
+
+            }
+
+            @Override
+            public void onStoryUpload(boolean isSuccessful) {
+
+            }
+        });
+    }
+
     public void downloadStoryList() {
         fireBaseHandler.downloadStoryList(5, new FireBaseHandler.OnStorylistener() {
             @Override
@@ -293,16 +304,51 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    public void downloadMoreStoryList() {
+        fireBaseHandler.downloadStoryList(5, mStoryList.get(mStoryList.size() - 1).getStoryID(), new FireBaseHandler.OnStorylistener() {
+            @Override
+            public void onStoryDownLoad(Story story, boolean isSuccessful) {
+
+            }
+
+            @Override
+            public void onStoryListDownLoad(ArrayList<Story> storyList, boolean isSuccessful) {
+
+                if (isSuccessful) {
+
+                    for (Story story : storyList) {
+                        MainActivity.this.mStoryList.add(story);
+                    }
+
+                    mPagerAdapter.notifyDataSetChanged();
+
+                }
+
+            }
+
+            @Override
+            public void onStoryUpload(boolean isSuccessful) {
+
+            }
+
+
+        });
+
+    }
+
     private void initializeViewPager() {
 
 // Instantiate a ViewPager and a PagerAdapter.
 
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
-        mPager.setPageTransformer(true, new ZoomOutPageTransformer());
+
+        //change to zoom
+        mPager.setPageTransformer(true, new RotateUpTransformer());
 
 
     }
+
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
@@ -311,7 +357,13 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public Fragment getItem(int position) {
-            return ShortStoryFragment.newInstance(mStoryList.get(position), MainActivity.this);
+
+            //getting more stories
+            if (position == mStoryList.size() - 2) {
+                downloadMoreStoryList();
+            }
+
+            return ShortStoryFragment.newInstance(mStoryList.get(position), MainActivity.this, nightMode);
         }
 
         @Override

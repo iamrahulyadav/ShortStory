@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,7 +36,10 @@ public class FireBaseHandler {
 
     public void uploadStory(final Story story, final OnStorylistener OnStorylistener) {
 
-        mFirebaseDatabase.getReference().push().setValue(story).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+        mDatabaseRef = mFirebaseDatabase.getReference().child("shortStory/");
+
+        mDatabaseRef.push().setValue(story).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 OnStorylistener.onStoryDownLoad(story, true);
@@ -57,7 +61,7 @@ public class FireBaseHandler {
     public void downloadStory(String storyUID, final OnStorylistener onStorylistener) {
 
 
-        DatabaseReference myRef = mFirebaseDatabase.getReference().child(storyUID);
+        DatabaseReference myRef = mFirebaseDatabase.getReference().child("shortStory/" + storyUID);
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -84,7 +88,10 @@ public class FireBaseHandler {
 
     public void downloadStoryList(int limit, final OnStorylistener onStorylistener) {
 
-        Query myref2 = mFirebaseDatabase.getReference().limitToLast(limit);
+
+        mDatabaseRef = mFirebaseDatabase.getReference().child("shortStory/");
+
+        Query myref2 = mDatabaseRef.limitToLast(limit);
 
         myref2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -119,8 +126,67 @@ public class FireBaseHandler {
 
     }
 
+    public void downloadStoryList(int limit, String lastShortStoryID, final OnStorylistener onStorylistener) {
+
+
+        mDatabaseRef = mFirebaseDatabase.getReference().child("shortStory/");
+
+        Query myref2 = mDatabaseRef.orderByKey().limitToLast(limit).endAt(lastShortStoryID);
+
+        myref2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<Story> storyArrayList = new ArrayList<Story>();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Story story = snapshot.getValue(Story.class);
+                    if (story != null) {
+                        story.setStoryID(snapshot.getKey());
+                    }
+                    storyArrayList.add(story);
+                }
+
+                storyArrayList.remove(storyArrayList.size() - 1);
+                Collections.reverse(storyArrayList);
+                onStorylistener.onStoryListDownLoad(storyArrayList, true);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                onStorylistener.onStoryListDownLoad(null, false);
+
+            }
+        });
+
+
+    }
+
+
+    public void uploadLike(Like like, final OnLikeListener onLikeListener) {
+        mDatabaseRef = mFirebaseDatabase.getReference().child("likes/");
+        mDatabaseRef.push().setValue(like).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                onLikeListener.onLikeUpload(false);
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+                onLikeListener.onLikeUpload(true);
+            }
+        });
+
+
+    }
 
     //interface
+
+    public interface OnLikeListener {
+        void onLikeUpload(boolean isSuccessful);
+    }
+
     public interface OnStorylistener {
 
 

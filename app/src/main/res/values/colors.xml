@@ -3,4 +3,23 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="colorSepiaBg">#f3e9ce</color>
+    <color name="colorSepiaText">#59432b</color>
+    <color name="colorLightSepiaText">#c7604b35</color>
+
+    <color name="colorDarkBg">#1e1e1e</color>
+    <color name="colorWhiteText">#f7f5f5</color>
+    <color name="colorLightWhiteText">#9cedecec</color>
+
+    <color name="colorBlueTitle">#05698b</color>
+    <color name="colorWhiteBg">#ffffff</color>
+    <color name="colorBlackText">#000000</color>
+
+    <color name="colorLightBlackText">#e9494949</color>
+
+
+
+
+
 </resources>

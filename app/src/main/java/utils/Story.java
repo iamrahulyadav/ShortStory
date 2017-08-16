@@ -17,6 +17,17 @@ public class Story implements Serializable {
     private String storyDate;
     private String storyID;
 
+    private int storyLikes;
+
+
+    public int getStoryLikes() {
+        return storyLikes;
+    }
+
+    public void setStoryLikes(int storyLikes) {
+        this.storyLikes = storyLikes;
+    }
+
 
     public String getStoryID() {
         return storyID;
