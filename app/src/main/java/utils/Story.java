@@ -18,6 +18,16 @@ public class Story implements Serializable {
     private String storyID;
 
     private int storyLikes;
+    boolean pushNotification;
+
+
+    public boolean isPushNotification() {
+        return pushNotification;
+    }
+
+    public void setPushNotification(boolean pushNotification) {
+        this.pushNotification = pushNotification;
+    }
 
 
     public int getStoryLikes() {
@@ -101,4 +111,6 @@ public class Story implements Serializable {
     public void setStoryDate(String storyDate) {
         this.storyDate = storyDate;
     }
+
+
 }

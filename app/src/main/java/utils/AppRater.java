@@ -54,42 +54,47 @@ public class AppRater {
 
     public static void showRateDialog(final Context mContext, final SharedPreferences.Editor editor) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Thank You!");
-        builder.setMessage("If you like the App, Give Review and support us")
-                .setPositiveButton("Rate Now", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.craftystudio.vocabulary.dailyeditorial&hl=en")));
-                        if (editor != null) {
-                            editor.putBoolean("dontshowagain", true);
-                            editor.commit();
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setTitle("Thank You!");
+            builder.setMessage("If you like the App, Give Review and support us")
+                    .setPositiveButton("Rate Now", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.craftystudio.vocabulary.dailyeditorial&hl=en")));
+                            if (editor != null) {
+                                editor.putBoolean("dontshowagain", true);
+                                editor.commit();
+                            }
+                            dialog.dismiss();
+
+                            // FIRE ZE MISSILES!
                         }
-                        dialog.dismiss();
-
-                        // FIRE ZE MISSILES!
-                    }
-                })
-                .setNegativeButton("No Thanks", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                        if (editor != null) {
-                            editor.putBoolean("dontshowagain", true);
-                            editor.commit();
+                    })
+                    .setNegativeButton("No Thanks", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                            if (editor != null) {
+                                editor.putBoolean("dontshowagain", true);
+                                editor.commit();
+                            }
+                            dialog.dismiss();
                         }
-                        dialog.dismiss();
-                    }
-                })
-                .setNeutralButton("Not now", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
+                    })
+                    .setNeutralButton("Not now", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
 
-                    }
-                });
-        // Create the AlertDialog object and return it
-        builder.create();
-        builder.show();
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            builder.create();
+            builder.show();
 
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

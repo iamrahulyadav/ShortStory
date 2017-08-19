@@ -18,6 +18,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SimpleTimeZone;
 
 import app.story.craftystudio.shortstory.MainActivity;
@@ -193,9 +195,16 @@ public class FireBaseHandler {
 
     public void uploadStoryLikes(String storyUID, int likes, final OnLikeListener onLikeListener) {
 
-        DatabaseReference myRef = mFirebaseDatabase.getReference().child("shortStory/" + storyUID + "/storyLikes");
+        DatabaseReference myRef = mFirebaseDatabase.getReference();
 
-        myRef.setValue(likes).addOnCompleteListener(new OnCompleteListener<Void>() {
+        Map post = new HashMap();
+
+        post.put("shortStory/"+storyUID+"/pushNotification" ,false);
+
+        post.put("shortStory/"+storyUID+"/storyLikes" ,likes);
+
+
+        myRef.updateChildren(post).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 onLikeListener.onLikeUpload(true);
@@ -203,9 +212,12 @@ public class FireBaseHandler {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+
                 onLikeListener.onLikeUpload(false);
             }
         });
+
+
 
 
     }

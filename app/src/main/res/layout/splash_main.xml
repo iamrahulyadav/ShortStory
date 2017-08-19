@@ -1,28 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
-    android:orientation="vertical">
+    android:background="@color/colorPrimary">
+
 
     <ImageView
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="120dp"
+        android:id="@+id/splash_icon_imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="110dp"
+        android:layout_centerInParent="true"
         android:scaleType="fitCenter"
-        android:src="@drawable/logo_image"
+        android:src="@drawable/splash_screen_logo"
 
         />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/splash_icon_imageview"
+        android:layout_centerInParent="true"
         android:fontFamily="serif"
-        android:text="Short Stories"
+        android:text="Inspire Me"
         android:textAlignment="center"
         android:textColor="@color/colorWhiteBg"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:typeface="serif" />
 
-</LinearLayout>
+
+</RelativeLayout>

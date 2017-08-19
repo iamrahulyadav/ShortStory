@@ -34,9 +34,7 @@ public class FirebasePushNotification extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
 
 
-
             storyID = remoteMessage.getData().get("story");
-
 
 
             intent = new Intent(this, MainActivity.class);

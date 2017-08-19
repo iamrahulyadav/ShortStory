@@ -434,14 +434,18 @@ public class ShortStoryFragment extends Fragment {
     private void onWordTap(String mWord) {
 
         speakOutWord(mWord);
-
+        wordMeaningTextview.setText("Fetching Meaning for - "+mWord);
         StoryWordMeaning storyWordMeaning = new StoryWordMeaning(mWord, new StoryWordMeaning.OnWordMeaninglistener() {
             @Override
             public void onWordMeaningDownLoad(ArrayList<String> wordMeaning, boolean isSuccessful) {
                 if (isSuccessful) {
+
                     wordMeaningTextview.setText(wordMeaning.get(0));
                     behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     Log.d("meaning is ", wordMeaning.get(0));
+
+                }else{
+                    wordMeaningTextview.setText("No Meaning Found");
 
                 }
             }
@@ -472,7 +476,7 @@ public class ShortStoryFragment extends Fragment {
     private void onShareClick() {
 
         Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                .setLink(Uri.parse("https://goo.gl/Ae4Mhw?storyID=" + story.getStoryID()))
+                .setLink(Uri.parse("https://goo.gl/UG9hPL?storyID=" + story.getStoryID()))
                 .setDynamicLinkDomain("x87w4.app.goo.gl")
                 .setAndroidParameters(
                         new DynamicLink.AndroidParameters.Builder("app.story.craftystudio.shortstory")
@@ -481,7 +485,7 @@ public class ShortStoryFragment extends Fragment {
                         new DynamicLink.SocialMetaTagParameters.Builder()
                                 .setTitle(story.getStoryTitle())
                                 .setDescription(story.getStoryBookName() + " by " + story.getStoryAuthorNAme())
-                                .setImageUrl(Uri.parse("https://play.google.com/store/apps/details?id=app.craftystudio.vocabulary.dailyeditorial"))
+                                .setImageUrl(Uri.parse("https://firebasestorage.googleapis.com/v0/b/short-story-c4712.appspot.com/o/ssicon.png?alt=media&token=578b3bd8-6ce7-453b-8855-a44c0e16bd78"))
                                 .build())
                 .setGoogleAnalyticsParameters(
                         new DynamicLink.GoogleAnalyticsParameters.Builder()

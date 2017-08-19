@@ -72,7 +72,7 @@ public class StoryWordMeaning extends AsyncTask<Void, Void, String> {
         // HttpGet httpGet = new HttpGet("http://api.wordnik.com:80/v4/words.json/randomWords?hasDictionaryDef=true&minCorpusCount=0&minLength=5&maxLength=15&limit=1&api_key=8d93a189fb620cfa578070b02f8056778a640192bd39b10a4");
         try {
 
-            HttpGet httpGet = new HttpGet("http://api.wordnik.com:80/v4/word.json/" + getmWord() + "/definitions?limit=10&includeRelated=true&useCanonical=false&includeTags=false&api_key=8d93a189fb620cfa578070b02f8056778a640192bd39b10a4");
+            HttpGet httpGet = new HttpGet("http://api.wordnik.com:80/v4/word.json/" + getmWord() + "/definitions?limit=1&includeRelated=false&useCanonical=false&includeTags=false&api_key=8d93a189fb620cfa578070b02f8056778a640192bd39b10a4");
 
 
             Log.d("My TAg", "doInBackground: going to call rest");
@@ -99,6 +99,11 @@ public class StoryWordMeaning extends AsyncTask<Void, Void, String> {
                 ArrayList<String> wordMeaningArraylist = new ArrayList<>();
 
                 // setWord(jsonArray.getJSONObject(0).getString("word"));
+
+                if (jsonArray.length() <= 0) {
+                    onWordMeaninglistener.onWordMeaningDownLoad(null, false);
+
+                }
 
                 for (int i = 0; i < jsonArray.length(); i++) {
 

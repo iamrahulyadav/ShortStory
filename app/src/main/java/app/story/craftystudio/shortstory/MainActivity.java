@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity
                             Log.d("DeepLink", "onSuccess: " + deepLink);
 
                             String shortStoryID = deepLink.getQueryParameter("storyID");
-                            Toast.makeText(MainActivity.this, "Story id " + shortStoryID, Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(MainActivity.this, "Story id " + shortStoryID, Toast.LENGTH_SHORT).show();
 
                             //download story
                             downloadStory(shortStoryID);
@@ -189,12 +189,17 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (!isSplashScreen) {
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else {
+                super.onBackPressed();
+            }
         } else {
             super.onBackPressed();
         }
+
     }
 
     @Override
@@ -476,7 +481,7 @@ public class MainActivity extends AppCompatActivity
     public void initializeInterstitialAds() {
 
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.setAdUnitId("ca-app-pub-8455191357100024/8750307275");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
         interstitialAdTimer(45000);
@@ -578,4 +583,6 @@ public class MainActivity extends AppCompatActivity
             return mStoryList.size();
         }
     }
+
+
 }
