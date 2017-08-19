@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -83,6 +84,8 @@ public class ShortStoryFragment extends Fragment {
     boolean isDarkNightModeOn = false;
     boolean isSepiaNightModeOn = false;
 
+    BottomSheetBehavior behavior;
+
     public static ShortStoryFragment newInstance(Story story, MainActivity context, boolean nightMode) {
         mainActivity = context;
         mNightModeOn = nightMode;
@@ -107,7 +110,7 @@ public class ShortStoryFragment extends Fragment {
         boolean sepiaNightModepref = prefs.getBoolean("SepiaNightModeOn", false);
 
         if (darkNightModepref) {
-            Toast.makeText(mainActivity, "dark night mode ON", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(mainActivity, "dark night mode ON", Toast.LENGTH_SHORT).show();
             isDarkNightModeOn = true;
             // onDarkNightMode();
         }
@@ -115,7 +118,7 @@ public class ShortStoryFragment extends Fragment {
         if (sepiaNightModepref) {
             isSepiaNightModeOn = true;
             // onSepiaNightMode();
-            Toast.makeText(mainActivity, "Sepia night mode ON", Toast.LENGTH_SHORT).show();
+            //  Toast.makeText(mainActivity, "Sepia night mode ON", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -192,8 +195,12 @@ public class ShortStoryFragment extends Fragment {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
                 if (checked) {
+
+                    story.setStoryLikes(story.getStoryLikes() + 1);
+
+                    storyLikesText.setText(story.getStoryLikes() + "");
                     Toast.makeText(mainActivity, "ThankYou! for liking the story", Toast.LENGTH_SHORT).show();
-                    uploadLike();
+                    uploadLike(story.getStoryLikes());
                 }
             }
         });
@@ -227,7 +234,7 @@ public class ShortStoryFragment extends Fragment {
         sepiaModeOnTextview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mainActivity, "Sepia selected", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(mainActivity, "Sepia selected", Toast.LENGTH_SHORT).show();
                 materialSheetFab.hideSheet();
 
                 prefs.edit().putBoolean("SepiaNightModeOn", true).apply();
@@ -240,7 +247,7 @@ public class ShortStoryFragment extends Fragment {
         darkModeOnTextview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mainActivity, "Dark selected", Toast.LENGTH_SHORT).show();
+                //  Toast.makeText(mainActivity, "Dark selected", Toast.LENGTH_SHORT).show();
                 materialSheetFab.hideSheet();
 
                 prefs.edit().putBoolean("DarkNightModeOn", true).apply();
@@ -254,7 +261,7 @@ public class ShortStoryFragment extends Fragment {
         normalModeOnTextview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mainActivity, "Normal selected", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(mainActivity, "Normal selected", Toast.LENGTH_SHORT).show();
                 materialSheetFab.hideSheet();
 
                 prefs.edit().putBoolean("DarkNightModeOn", false).apply();
@@ -287,6 +294,11 @@ public class ShortStoryFragment extends Fragment {
             }
         });
 
+
+        View bottomSheet = view.findViewById(R.id.fragmentShortStory_storyWordMeaning_Cardview);
+        behavior = BottomSheetBehavior.from(bottomSheet);
+
+
         return view;
     }
 
@@ -303,7 +315,7 @@ public class ShortStoryFragment extends Fragment {
         storyTagText.setTextColor(getResources().getColor(R.color.colorLightWhiteText));
         storyGenreText.setTextColor(getResources().getColor(R.color.colorLightWhiteText));
         storyDateText.setTextColor(getResources().getColor(R.color.colorLightWhiteText));
-        wordMeaningTextview.setTextColor(getResources().getColor(R.color.colorWhiteText));
+        wordMeaningTextview.setTextColor(getResources().getColor(R.color.colorBlackText));
 
 
     }
@@ -325,17 +337,17 @@ public class ShortStoryFragment extends Fragment {
 
     }
 
-    private void uploadLike() {
-        Like like = new Like();
-        like.setShortStoryID(story.getStoryID());
-        like.setShortStoryTitle(story.getStoryTitle());
+    private void uploadLike(int currentLikes) {
 
         FireBaseHandler fireBaseHandler = new FireBaseHandler();
-        fireBaseHandler.uploadLike(like, new FireBaseHandler.OnLikeListener() {
+
+        fireBaseHandler.uploadStoryLikes(story.getStoryID(), currentLikes, new FireBaseHandler.OnLikeListener() {
             @Override
             public void onLikeUpload(boolean isSuccessful) {
-
                 if (isSuccessful) {
+
+                } else {
+                    // storyLikesText.setText(story.getStoryLikes()+"");
 
                 }
             }
@@ -345,8 +357,9 @@ public class ShortStoryFragment extends Fragment {
 
     private void onSepiaNightMode() {
         itemHolderCardview.setCardBackgroundColor(getResources().getColor(R.color.colorSepiaBg));
-        titleText.setTextColor(getResources().getColor(R.color.colorSepiaText));
-        descriptionText.setTextColor(getResources().getColor(R.color.colorSepiaText));
+        titleText.setTextColor(ContextCompat.getColor(getContext(), R.color.colorSepiaText));
+        // descriptionText.setTextColor(getResources().getColor(R.color.colorSepiaText));
+        descriptionText.setTextColor(ContextCompat.getColor(getContext(), R.color.colorSepiaText));
 
 
         bookLinkText.setTextColor(getResources().getColor(R.color.colorLightSepiaText));
@@ -355,7 +368,7 @@ public class ShortStoryFragment extends Fragment {
         storyTagText.setTextColor(getResources().getColor(R.color.colorLightSepiaText));
         storyGenreText.setTextColor(getResources().getColor(R.color.colorLightSepiaText));
         storyDateText.setTextColor(getResources().getColor(R.color.colorLightSepiaText));
-        wordMeaningTextview.setTextColor(getResources().getColor(R.color.colorLightSepiaText));
+        wordMeaningTextview.setTextColor(getResources().getColor(R.color.colorBlackText));
 
 
     }
@@ -427,6 +440,7 @@ public class ShortStoryFragment extends Fragment {
             public void onWordMeaningDownLoad(ArrayList<String> wordMeaning, boolean isSuccessful) {
                 if (isSuccessful) {
                     wordMeaningTextview.setText(wordMeaning.get(0));
+                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     Log.d("meaning is ", wordMeaning.get(0));
 
                 }

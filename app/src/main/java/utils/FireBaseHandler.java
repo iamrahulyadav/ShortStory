@@ -1,6 +1,8 @@
 package utils;
 
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -17,6 +19,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.SimpleTimeZone;
+
+import app.story.craftystudio.shortstory.MainActivity;
 
 /**
  * Created by Aisha on 8/11/2017.
@@ -39,7 +43,12 @@ public class FireBaseHandler {
 
         mDatabaseRef = mFirebaseDatabase.getReference().child("shortStory/");
 
-        mDatabaseRef.push().setValue(story).addOnCompleteListener(new OnCompleteListener<Void>() {
+        story.setStoryID(mDatabaseRef.push().getKey());
+
+        DatabaseReference mDatabaseRef1 = mFirebaseDatabase.getReference().child("shortStory/" + story.getStoryID());
+
+
+        mDatabaseRef1.setValue(story).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 OnStorylistener.onStoryDownLoad(story, true);
@@ -175,6 +184,26 @@ public class FireBaseHandler {
             public void onSuccess(Void aVoid) {
 
                 onLikeListener.onLikeUpload(true);
+            }
+        });
+
+
+    }
+
+
+    public void uploadStoryLikes(String storyUID, int likes, final OnLikeListener onLikeListener) {
+
+        DatabaseReference myRef = mFirebaseDatabase.getReference().child("shortStory/" + storyUID + "/storyLikes");
+
+        myRef.setValue(likes).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                onLikeListener.onLikeUpload(true);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                onLikeListener.onLikeUpload(false);
             }
         });
 

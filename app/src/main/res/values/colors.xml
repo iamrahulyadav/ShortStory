@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#0781ab</color>
+    <color name="colorPrimaryDark">#04698c</color>
     <color name="colorAccent">#FF4081</color>
 
     <color name="colorSepiaBg">#f3e9ce</color>
@@ -13,6 +13,13 @@
     <color name="colorLightWhiteText">#9cedecec</color>
 
     <color name="colorBlueTitle">#05698b</color>
+    <color name="colorBlueToolbar">#0781ab</color>
+
+    <color name="colorRedToolbar">#e50000</color>
+    <color name="colorRedTitle">#b20000</color>
+
+
+
     <color name="colorWhiteBg">#ffffff</color>
     <color name="colorBlackText">#000000</color>
 

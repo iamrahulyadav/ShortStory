@@ -2,9 +2,13 @@ package app.story.craftystudio.shortstory;
 
 import android.app.UiModeManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,6 +17,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -27,19 +32,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import utils.AppRater;
 import utils.FireBaseHandler;
 import utils.Story;
 import utils.ZoomOutPageTransformer;
+
+import static android.R.id.message;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -52,13 +65,358 @@ public class MainActivity extends AppCompatActivity
 
     static boolean nightMode = false;
 
+    int adsCount = 0;
+    private InterstitialAd mInterstitialAd;
+
+    private boolean pendingInterstitialAd;
+    private Handler handler;
+    private Runnable runnable;
+
+    boolean isSplashScreen = true;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.splash_main);
+
+        fireBaseHandler = new FireBaseHandler();
+        openDynamicLink();
+    }
+
+    public void initializeActivity() {
         setContentView(R.layout.activity_main);
+        isSplashScreen = false;
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+        mPager = (ViewPager) findViewById(R.id.mainActivity_viewpager);
+
+
+        initializeViewPager();
+
+
+        //calling rate now dialog
+        AppRater appRater = new AppRater();
+        appRater.app_launched(MainActivity.this);
+
+        FirebaseMessaging.getInstance().subscribeToTopic("subscribed");
+        // FirebaseMessaging.getInstance().subscribeToTopic("tester");
+        //Log.d("push notifiaction", "onCreate: "+ FirebaseInstanceId.getInstance().getToken());
+
+        MobileAds.initialize(this, "ca-app-pub-8455191357100024~5605269189");
+        initializeInterstitialAds();
+
+    }
+
+    private void openDynamicLink() {
+        FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(getIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+                    @Override
+                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                        // Get deep link from result (may be null if no link is found)
+                        Uri deepLink = null;
+                        if (pendingDynamicLinkData != null) {
+                            deepLink = pendingDynamicLinkData.getLink();
+                            Log.d("DeepLink", "onSuccess: " + deepLink);
+
+                            String shortStoryID = deepLink.getQueryParameter("storyID");
+                            Toast.makeText(MainActivity.this, "Story id " + shortStoryID, Toast.LENGTH_SHORT).show();
+
+                            //download story
+                            downloadStory(shortStoryID);
+
+                            // downloadNewsArticle(newsArticleID);
+
+                        } else {
+                            Log.d("DeepLink", "onSuccess: ");
+
+                            //download story list
+
+
+                            try {
+                                Intent intent = getIntent();
+                                String storyID = intent.getStringExtra("storyID");
+                                if (storyID == null) {
+                                    downloadStoryList();
+                                } else {
+                                    //download story
+                                    downloadStory(storyID);
+
+                                    //   Toast.makeText(this, "Story id is = "+storyID, Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (Exception e) {
+                                downloadStoryList();
+                                e.printStackTrace();
+                            }
+
+
+                        }
+
+
+                        // Handle the deep link. For example, open the linked
+                        // content, or apply promotional credit to the user's
+                        // account.
+                        // ...
+
+                        // ...
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+
+                        Log.w("DeepLink", "getDynamicLink:onFailure", e);
+                    }
+                });
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_suggestion) {
+            giveSuggestion();
+
+        } else if (id == R.id.nav_rate) {
+
+            rateUs();
+
+        } else if (id == R.id.nav_share) {
+            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+
+            //sharingIntent.putExtra(Intent.EXTRA_STREAM, newsMetaInfo.getNewsImageLocalPath());
+
+            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+                    "\n\n Read Short Inspirational Stories Daily \n Download it now \n ");
+            startActivity(Intent.createChooser(sharingIntent, "Share Story App via"));
+
+        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void giveSuggestion() {
+
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"acraftystudio@gmail.com"});
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Suggestion From Short Story User");
+        emailIntent.setType("text/plain");
+
+        startActivity(Intent.createChooser(emailIntent, "Send mail From..."));
+
+    }
+
+    private void rateUs() {
+
+        MainActivity.this.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.craftystudio.vocabulary.dailyeditorial&hl=en")));
+
+    }
+
+    private void downloadStory(String shortStoryUID) {
+
+        fireBaseHandler.downloadStory(shortStoryUID, new FireBaseHandler.OnStorylistener() {
+            @Override
+            public void onStoryDownLoad(Story story, boolean isSuccessful) {
+
+                if (isSplashScreen) {
+                    initializeActivity();
+                }
+
+                if (isSuccessful) {
+                    mStoryList.add(story);
+                    mPagerAdapter.notifyDataSetChanged();
+                } else {
+                    openConnectionFailureDialog();
+                }
+                downloadStoryList();
+            }
+
+            @Override
+            public void onStoryListDownLoad(ArrayList<Story> storyList, boolean isSuccessful) {
+
+            }
+
+            @Override
+            public void onStoryUpload(boolean isSuccessful) {
+
+            }
+        });
+    }
+
+    public void downloadStoryList() {
+        fireBaseHandler.downloadStoryList(5, new FireBaseHandler.OnStorylistener() {
+            @Override
+            public void onStoryDownLoad(Story story, boolean isSuccessful) {
+
+            }
+
+            @Override
+            public void onStoryListDownLoad(ArrayList<Story> storyList, boolean isSuccessful) {
+                //    Toast.makeText(MainActivity.this, "Story size is " + storyList.size() + "\n " + storyList.get(2).getStoryTitle(), Toast.LENGTH_SHORT).show();
+
+                if (isSplashScreen) {
+                    initializeActivity();
+                }
+                if (isSuccessful) {
+
+                    for (Story story : storyList) {
+                        MainActivity.this.mStoryList.add(story);
+                    }
+
+                    mPagerAdapter.notifyDataSetChanged();
+
+                } else {
+                    openConnectionFailureDialog();
+                }
+            }
+
+            @Override
+            public void onStoryUpload(boolean isSuccessful) {
+
+            }
+        });
+    }
+
+    public void openConnectionFailureDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Thank You!");
+        builder.setMessage("If you like the App, Give Review and support us")
+                .setPositiveButton("Rate Now", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        dialog.dismiss();
+                        recreate();
+
+                        // FIRE ZE MISSILES!
+                    }
+                });
+
+        // Create the AlertDialog object and return it
+        builder.create();
+        builder.show();
+
+
+    }
+
+
+    public void downloadMoreStoryList() {
+        fireBaseHandler.downloadStoryList(5, mStoryList.get(mStoryList.size() - 1).getStoryID(), new FireBaseHandler.OnStorylistener() {
+            @Override
+            public void onStoryDownLoad(Story story, boolean isSuccessful) {
+
+            }
+
+            @Override
+            public void onStoryListDownLoad(ArrayList<Story> storyList, boolean isSuccessful) {
+
+                if (isSuccessful) {
+
+                    for (Story story : storyList) {
+                        MainActivity.this.mStoryList.add(story);
+                    }
+
+                    mPagerAdapter.notifyDataSetChanged();
+
+                } else {
+                    openConnectionFailureDialog();
+                }
+
+            }
+
+            @Override
+            public void onStoryUpload(boolean isSuccessful) {
+
+            }
+
+
+        });
+
+    }
+
+    private void initializeViewPager() {
+
+// Instantiate a ViewPager and a PagerAdapter.
+
+        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+
+        //change to zoom
+        mPager.setPageTransformer(true, new RotateUpTransformer());
+
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+                checkInterstitialAds();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+    }
+
+    public void uploadStory() {
 
         //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -111,223 +469,53 @@ public class MainActivity extends AppCompatActivity
             }
         });*/
 
-        //upload story
-
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        fireBaseHandler = new FireBaseHandler();
-        mPager = (ViewPager) findViewById(R.id.mainActivity_viewpager);
-
-
-        initializeViewPager();
-        openDynamicLink();
-
-        //calling rate now dialog
-        AppRater appRater = new AppRater();
-        appRater.app_launched(MainActivity.this);
-
-
 
     }
 
-    private void openDynamicLink() {
-        FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(getIntent())
-                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
-                    @Override
-                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                        // Get deep link from result (may be null if no link is found)
-                        Uri deepLink = null;
-                        if (pendingDynamicLinkData != null) {
-                            deepLink = pendingDynamicLinkData.getLink();
-                            Log.d("DeepLink", "onSuccess: " + deepLink);
 
-                            String shortStoryID = deepLink.getQueryParameter("storyID");
-                            Toast.makeText(MainActivity.this, "Story id " + shortStoryID, Toast.LENGTH_SHORT).show();
+    public void initializeInterstitialAds() {
 
-                            //download story list
-                            downloadStory(shortStoryID);
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
-                            // downloadNewsArticle(newsArticleID);
-
-                        } else {
-                            Log.d("DeepLink", "onSuccess: ");
-
-                            //download story list
-                            downloadStoryList();
-
-                        }
+        interstitialAdTimer(45000);
 
 
-                        // Handle the deep link. For example, open the linked
-                        // content, or apply promotional credit to the user's
-                        // account.
-                        // ...
+        mInterstitialAd.setAdListener(new AdListener() {
 
-                        // ...
-                    }
-                })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("DeepLink", "getDynamicLink:onFailure", e);
-                    }
-                });
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-            sharingIntent.setType("text/plain");
-
-            //sharingIntent.putExtra(Intent.EXTRA_STREAM, newsMetaInfo.getNewsImageLocalPath());
-
-            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-                    "\n\n App Link Read Full Story");
-            startActivity(Intent.createChooser(sharingIntent, "Share Story App via"));
-
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    private void downloadStory(String shortStoryUID) {
-
-        fireBaseHandler.downloadStory(shortStoryUID, new FireBaseHandler.OnStorylistener() {
             @Override
-            public void onStoryDownLoad(Story story, boolean isSuccessful) {
-
-                if (isSuccessful) {
-                    mStoryList.add(story);
-                    mPagerAdapter.notifyDataSetChanged();
-                }
-                downloadStoryList();
+            public void onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+                Log.i("Ads", "onAdLoaded");
             }
 
             @Override
-            public void onStoryListDownLoad(ArrayList<Story> storyList, boolean isSuccessful) {
-
+            public void onAdFailedToLoad(int errorCode) {
+                // Code to be executed when an ad request fails.
+                Log.i("Ads", "onAdFailedToLoad");
             }
 
             @Override
-            public void onStoryUpload(boolean isSuccessful) {
-
-            }
-        });
-    }
-
-    public void downloadStoryList() {
-        fireBaseHandler.downloadStoryList(5, new FireBaseHandler.OnStorylistener() {
-            @Override
-            public void onStoryDownLoad(Story story, boolean isSuccessful) {
-
+            public void onAdOpened() {
+                // Code to be executed when the ad is displayed.
+                Log.i("Ads", "onAdOpened");
             }
 
             @Override
-            public void onStoryListDownLoad(ArrayList<Story> storyList, boolean isSuccessful) {
-                //    Toast.makeText(MainActivity.this, "Story size is " + storyList.size() + "\n " + storyList.get(2).getStoryTitle(), Toast.LENGTH_SHORT).show();
-
-                if (isSuccessful) {
-
-                    for (Story story : storyList) {
-                        MainActivity.this.mStoryList.add(story);
-                    }
-
-                    mPagerAdapter.notifyDataSetChanged();
-
-                }
+            public void onAdLeftApplication() {
+                // Code to be executed when the user has left the app.
+                Log.i("Ads", "onAdLeftApplication");
             }
 
             @Override
-            public void onStoryUpload(boolean isSuccessful) {
+            public void onAdClosed() {
+                // Code to be executed when when the interstitial ad is closed.
+                Log.i("Ads", "onAdClosed");
+                adsCount = 0;
+                interstitialAdTimer(45000);
 
-            }
-        });
-    }
-
-    public void downloadMoreStoryList() {
-        fireBaseHandler.downloadStoryList(5, mStoryList.get(mStoryList.size() - 1).getStoryID(), new FireBaseHandler.OnStorylistener() {
-            @Override
-            public void onStoryDownLoad(Story story, boolean isSuccessful) {
-
-            }
-
-            @Override
-            public void onStoryListDownLoad(ArrayList<Story> storyList, boolean isSuccessful) {
-
-                if (isSuccessful) {
-
-                    for (Story story : storyList) {
-                        MainActivity.this.mStoryList.add(story);
-                    }
-
-                    mPagerAdapter.notifyDataSetChanged();
-
-                }
-
-            }
-
-            @Override
-            public void onStoryUpload(boolean isSuccessful) {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
             }
 
@@ -336,17 +524,35 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void initializeViewPager() {
+    public void interstitialAdTimer(long waitTill) {
+        pendingInterstitialAd = false;
 
-// Instantiate a ViewPager and a PagerAdapter.
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                pendingInterstitialAd = true;
+            }
+        };
 
-        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
-        mPager.setAdapter(mPagerAdapter);
 
-        //change to zoom
-        mPager.setPageTransformer(true, new RotateUpTransformer());
+        handler.removeCallbacks(runnable);
+        handler.postDelayed(runnable, waitTill);
 
 
+    }
+
+
+    private void checkInterstitialAds() {
+
+        if (adsCount > 2 && pendingInterstitialAd) {
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            } else {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+            }
+        }
     }
 
 
@@ -358,6 +564,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public Fragment getItem(int position) {
 
+            adsCount++;
             //getting more stories
             if (position == mStoryList.size() - 2) {
                 downloadMoreStoryList();

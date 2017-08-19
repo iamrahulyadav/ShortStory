@@ -19,7 +19,7 @@ public class AppRater {
     private final static String APP_PNAME = "app.story.craftystudio.shortstory";// Package Name
 
     private final static int DAYS_UNTIL_PROMPT = 0;//Min number of days
-    private final static int LAUNCHES_UNTIL_PROMPT = 5;//Min number of launches
+    private final static int LAUNCHES_UNTIL_PROMPT = 7;//Min number of launches
 
     public static void app_launched(Context mContext) {
         SharedPreferences prefs = mContext.getSharedPreferences("apprater", 0);
@@ -55,8 +55,8 @@ public class AppRater {
     public static void showRateDialog(final Context mContext, final SharedPreferences.Editor editor) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Rate Us");
-        builder.setMessage("If you like the App, Rate our app and support us")
+        builder.setTitle("Thank You!");
+        builder.setMessage("If you like the App, Give Review and support us")
                 .setPositiveButton("Rate Now", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.craftystudio.vocabulary.dailyeditorial&hl=en")));
@@ -69,7 +69,7 @@ public class AppRater {
                         // FIRE ZE MISSILES!
                     }
                 })
-                .setNegativeButton("No Thanx", new DialogInterface.OnClickListener() {
+                .setNegativeButton("No Thanks", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User cancelled the dialog
                         if (editor != null) {
@@ -79,7 +79,7 @@ public class AppRater {
                         dialog.dismiss();
                     }
                 })
-                .setNeutralButton("Later", new DialogInterface.OnClickListener() {
+                .setNeutralButton("Not now", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
