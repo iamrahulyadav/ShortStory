@@ -492,6 +492,7 @@ public class MainActivity extends AppCompatActivity
         interstitialAdTimer(45000);
 
 
+
         mInterstitialAd.setAdListener(new AdListener() {
 
             @Override
