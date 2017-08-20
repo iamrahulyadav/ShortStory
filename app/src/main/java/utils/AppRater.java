@@ -57,10 +57,13 @@ public class AppRater {
         try {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setTitle("Thank You!");
-            builder.setMessage("If you like the App, Give Review and support us")
+            builder.setMessage("If you like the App ,Please Give Review and support us")
                     .setPositiveButton("Rate Now", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.craftystudio.vocabulary.dailyeditorial&hl=en")));
+                            final String appPackageName = mContext.getPackageName();
+                            String link = "https://play.google.com/store/apps/details?id=" + appPackageName;
+
+                            mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(link)));
                             if (editor != null) {
                                 editor.putBoolean("dontshowagain", true);
                                 editor.commit();

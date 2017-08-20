@@ -86,6 +86,8 @@ public class ShortStoryFragment extends Fragment {
 
     BottomSheetBehavior behavior;
 
+    boolean isTestToSpeechOn = false;
+
     public static ShortStoryFragment newInstance(Story story, MainActivity context, boolean nightMode) {
         mainActivity = context;
         mNightModeOn = nightMode;
@@ -173,7 +175,12 @@ public class ShortStoryFragment extends Fragment {
         readFullStoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                speakOutFullStory();
+
+                if (isTestToSpeechOn) {
+                    stopReadingFullStory();
+                } else {
+                    speakOutFullStory();
+                }
             }
         });
 
@@ -300,6 +307,12 @@ public class ShortStoryFragment extends Fragment {
 
 
         return view;
+    }
+
+    private void stopReadingFullStory() {
+
+        isTestToSpeechOn = false;
+        tts.stop();
     }
 
 
@@ -433,8 +446,9 @@ public class ShortStoryFragment extends Fragment {
 
     private void onWordTap(String mWord) {
 
+
         speakOutWord(mWord);
-        wordMeaningTextview.setText("Fetching Meaning for - "+mWord);
+        wordMeaningTextview.setText("Fetching Meaning for - " + mWord);
         StoryWordMeaning storyWordMeaning = new StoryWordMeaning(mWord, new StoryWordMeaning.OnWordMeaninglistener() {
             @Override
             public void onWordMeaningDownLoad(ArrayList<String> wordMeaning, boolean isSuccessful) {
@@ -444,7 +458,7 @@ public class ShortStoryFragment extends Fragment {
                     behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     Log.d("meaning is ", wordMeaning.get(0));
 
-                }else{
+                } else {
                     wordMeaningTextview.setText("No Meaning Found");
 
                 }
@@ -465,6 +479,7 @@ public class ShortStoryFragment extends Fragment {
             public void onInit(int i) {
                 tts.setLanguage(Locale.UK);
                 tts.speak(speakWord, TextToSpeech.QUEUE_FLUSH, null);
+                tts.setSpeechRate(0.5f);
 
             }
         });
@@ -514,12 +529,14 @@ public class ShortStoryFragment extends Fragment {
     }
 
     private void speakOutFullStory() {
+
+        isTestToSpeechOn = true;
         tts = new TextToSpeech(mainActivity, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int i) {
                 tts.setLanguage(Locale.UK);
                 tts.speak(story.getStoryFull(), TextToSpeech.QUEUE_FLUSH, null);
-
+                tts.setSpeechRate(0.5f);
             }
         });
 
