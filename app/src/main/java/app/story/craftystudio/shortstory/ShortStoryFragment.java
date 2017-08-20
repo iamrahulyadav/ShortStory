@@ -26,6 +26,10 @@ import android.widget.Button;
 
 import android.speech.tts.TextToSpeech;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+import com.crashlytics.android.answers.CustomEvent;
+import com.crashlytics.android.answers.RatingEvent;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.dynamiclinks.DynamicLink;
@@ -124,6 +128,12 @@ public class ShortStoryFragment extends Fragment {
         }
 
 
+        Answers.getInstance().logContentView(new ContentViewEvent()
+        .putContentName(story.getStoryTitle())
+                .putContentId(story.getStoryID())
+        );
+
+
     }
 
     @Nullable
@@ -208,6 +218,10 @@ public class ShortStoryFragment extends Fragment {
                     storyLikesText.setText(story.getStoryLikes() + "");
                     Toast.makeText(mainActivity, "ThankYou! for liking the story", Toast.LENGTH_SHORT).show();
                     uploadLike(story.getStoryLikes());
+
+                    shineLikeButtonJava.setActivated(false);
+
+                    Answers.getInstance().logRating(new RatingEvent().putContentName(story.getStoryTitle()).putContentId(story.getStoryID()).putRating(1));
                 }
             }
         });
@@ -220,6 +234,10 @@ public class ShortStoryFragment extends Fragment {
                 if (checked) {
                     Toast.makeText(mainActivity, "ThankYou! for Sharing the story", Toast.LENGTH_SHORT).show();
                     onShareClick();
+
+
+                    Answers.getInstance().logCustom(new CustomEvent("Share link").putCustomAttribute("Story name",story.getStoryTitle()));
+
                 }
             }
         });
@@ -444,7 +462,7 @@ public class ShortStoryFragment extends Fragment {
         };
     }
 
-    private void onWordTap(String mWord) {
+    private void onWordTap(final String mWord) {
 
 
         speakOutWord(mWord);
@@ -460,6 +478,8 @@ public class ShortStoryFragment extends Fragment {
 
                 } else {
                     wordMeaningTextview.setText("No Meaning Found");
+
+                    Answers.getInstance().logCustom(new CustomEvent("Meaning Failed").putCustomAttribute("word",mWord));
 
                 }
             }
