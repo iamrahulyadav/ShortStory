@@ -386,6 +386,7 @@ public class MainActivity extends AppCompatActivity
 
             }
 
+
             @Override
             public void onStoryUpload(boolean isSuccessful) {
 
