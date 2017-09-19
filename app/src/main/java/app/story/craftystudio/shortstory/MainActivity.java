@@ -155,9 +155,21 @@ public class MainActivity extends AppCompatActivity
                             //download story
                             if (shortStoryID != null) {
                                 downloadStory(shortStoryID);
+                                try {
+                                    Answers.getInstance().logCustom(new CustomEvent("Via dyanamic link").putCustomAttribute("Story id", shortStoryID));
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
                             } else {
                                 openQuotesActivity();
+                                try {
+                                    Answers.getInstance().logCustom(new CustomEvent("Via dyanamic link quotes").putCustomAttribute("Quotes", 1));
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
                             }
+
+
                             // downloadNewsArticle(newsArticleID);
 
                         } else {
@@ -174,7 +186,11 @@ public class MainActivity extends AppCompatActivity
                                 } else {
                                     //download story
                                     downloadStory(storyID);
-
+                                    try {
+                                        Answers.getInstance().logCustom(new CustomEvent("Via push notification").putCustomAttribute("Story id", storyID));
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }
                                     //   Toast.makeText(this, "Story id is = "+storyID, Toast.LENGTH_SHORT).show();
                                 }
                             } catch (Exception e) {
@@ -198,7 +214,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onFailure(@NonNull Exception e) {
 
-
+                        downloadStoryList();
                         Log.w("DeepLink", "getDynamicLink:onFailure", e);
                     }
                 });
