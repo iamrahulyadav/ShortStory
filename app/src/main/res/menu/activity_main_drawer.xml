@@ -3,27 +3,36 @@
 
     <group android:checkableBehavior="single">
 
+        <item
+            android:id="@+id/nav_quotes"
+            android:icon="@drawable/ic_action_quotes"
+            android:title="Famous Quotes" />
+
 
         <item android:title="Communication">
 
             <item
-                android:id="@+id/nav_suggestion"
-                android:icon="@drawable/ic_action_suggestion"
-                android:title="Suggestion" />
-
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_action_share"
-                android:title="Share App" />
-            <item
-                android:id="@+id/nav_rate"
-                android:icon="@drawable/ic_action_rate"
-                android:title="Rate us" />
+                android:id="@+id/nav_tutlorial"
+                android:icon="@drawable/ic_action_tutorial"
+                android:title="Guide Tutorial" />
         </item>
+
+        <item
+            android:id="@+id/nav_suggestion"
+            android:icon="@drawable/ic_action_suggestion"
+            android:title="Suggestion" />
+
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/ic_action_sharewhite"
+            android:title="Share App" />
+        <item
+            android:id="@+id/nav_rate"
+            android:icon="@drawable/ic_action_rate"
+            android:title="Rate us" />
 
 
     </group>
-
 
 
 </menu>

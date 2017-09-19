@@ -17,8 +17,18 @@ public class Story implements Serializable {
     private String storyDate;
     private String storyID;
 
+
+    private String storyImageAddress;
     private int storyLikes;
     boolean pushNotification;
+
+    public String getStoryImageAddress() {
+        return storyImageAddress;
+    }
+
+    public void setStoryImageAddress(String storyImageAddress) {
+        this.storyImageAddress = storyImageAddress;
+    }
 
 
     public boolean isPushNotification() {

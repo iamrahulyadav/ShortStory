@@ -57,6 +57,9 @@ dependencies {
     compile 'com.google.firebase:firebase-invites:11.0.1'
 
 
+    compile 'com.firebaseui:firebase-ui-storage:0.6.0'
+    compile 'com.google.firebase:firebase-storage:11.0.1'
+
     compile "cz.msebera.android:httpclient:4.4.1.2"
 
     compile 'com.gordonwong:material-sheet-fab:1.2.1'
@@ -77,6 +80,8 @@ dependencies {
     compile 'com.google.ads.mediation:facebook:4.25.0.0'*/
 
     compile 'com.google.ads.mediation:chartboost:7.0.0.0'
+
+    compile 'com.stephentuso:welcome:1.4.1'
 
 }
 apply plugin: 'com.google.gms.google-services'

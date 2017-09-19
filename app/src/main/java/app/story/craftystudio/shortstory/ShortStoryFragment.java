@@ -1,5 +1,7 @@
 package app.story.craftystudio.shortstory;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +15,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
@@ -26,10 +29,13 @@ import android.widget.Button;
 
 import android.speech.tts.TextToSpeech;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.answers.RatingEvent;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.dynamiclinks.DynamicLink;
@@ -42,6 +48,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 import com.sackcentury.shinebuttonlib.ShineButton;
@@ -92,6 +100,8 @@ public class ShortStoryFragment extends Fragment {
 
     boolean isTestToSpeechOn = false;
 
+    ProgressDialog progressDialog;
+
     public static ShortStoryFragment newInstance(Story story, MainActivity context, boolean nightMode) {
         mainActivity = context;
         mNightModeOn = nightMode;
@@ -110,6 +120,12 @@ public class ShortStoryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             this.story = (Story) getArguments().getSerializable("Story");
+
+            Answers.getInstance().logContentView(new ContentViewEvent()
+                    .putContentName(story.getStoryTitle())
+                    .putContentId(story.getStoryID())
+            );
+
         }
 
         boolean darkNightModepref = prefs.getBoolean("DarkNightModeOn", false);
@@ -128,12 +144,6 @@ public class ShortStoryFragment extends Fragment {
         }
 
 
-        Answers.getInstance().logContentView(new ContentViewEvent()
-        .putContentName(story.getStoryTitle())
-                .putContentId(story.getStoryID())
-        );
-
-
     }
 
     @Nullable
@@ -144,25 +154,66 @@ public class ShortStoryFragment extends Fragment {
 
 
         titleText = (TextView) view.findViewById(R.id.fragmentShortStory_title_textView);
-        titleText.setText(story.getStoryTitle());
 
+        //formatting text
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+
+            String fulltitle = story.getStoryTitle();
+            String newTitle = fulltitle.replaceAll("\n", "<br/>");
+
+            titleText.setText(Html.fromHtml(newTitle, Html.FROM_HTML_MODE_COMPACT));
+        } else {
+
+            String fulltitle = story.getStoryTitle();
+            String newTitle = fulltitle.replaceAll("\n", "<br/>");
+            titleText.setText(Html.fromHtml(newTitle));
+            //descriptionText.setText(story.getStoryFull());
+
+        }
         descriptionText = (TextView) view.findViewById(R.id.fragmentShortStory_description_textView);
-        init(story.getStoryFull());
+        //init(story.getStoryFull());
+
+        //formatting text
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            String fullStory = story.getStoryFull();
+            String newStory = fullStory.replaceAll("\n", "<br/>");
+            descriptionText.setText(Html.fromHtml(newStory, Html.FROM_HTML_MODE_COMPACT));
+        } else {
+
+            String fullStory = story.getStoryFull();
+            String newStory = fullStory.replaceAll("\n", "<br/>");
+            descriptionText.setText(Html.fromHtml(newStory));
+            //descriptionText.setText(story.getStoryFull());
+
+        }
 
         //get wordmeaning of word tap
         wordMeaningTextview = (TextView) view.findViewById(R.id.fragmentShortStory_storyWordMeaning_textView);
 
         //Name of a book
         bookNameText = (TextView) view.findViewById(R.id.fragmentShortStory_bookName_textView);
-        bookNameText.setText("Book Name -" + story.getStoryBookName());
+        if (story.getStoryBookName().isEmpty()) {
+            bookNameText.setVisibility(View.GONE);
+        } else {
+            bookNameText.setText("Book Name -" + story.getStoryBookName());
+
+        }
 
         //link of book to buy
         bookLinkText = (TextView) view.findViewById(R.id.fragmentShortStory_bookLink_textView);
-        bookLinkText.setText("Get Book From -" + story.getStoryBookLink());
+        if (story.getStoryBookLink().isEmpty()) {
+            bookLinkText.setVisibility(View.GONE);
+        } else {
+            bookLinkText.setText("Get Book From -" + story.getStoryBookLink());
+        }
 
         //name of Author
         storyAuthorNameText = (TextView) view.findViewById(R.id.fragmentShortStory_authorName_textView);
-        storyAuthorNameText.setText("by " + story.getStoryAuthorNAme());
+        if (story.getStoryAuthorNAme().isEmpty()) {
+            storyAuthorNameText.setVisibility(View.GONE);
+        } else {
+            storyAuthorNameText.setText("by " + story.getStoryAuthorNAme());
+        }
 
         //story genre
         storyGenreText = (TextView) view.findViewById(R.id.fragmentShortStory_genre_textView);
@@ -177,7 +228,7 @@ public class ShortStoryFragment extends Fragment {
         storyDateText.setText(story.getStoryDate());
 
         storyLikesText = (TextView) view.findViewById(R.id.fragmentShortStory_storyLikes_Textview);
-        storyLikesText.setText(story.getStoryLikes() + "");
+        storyLikesText.setText(story.getStoryLikes() + " likes");
 
 
         //speak full story
@@ -186,13 +237,56 @@ public class ShortStoryFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if (isTestToSpeechOn) {
+                /*if (isTestToSpeechOn) {
                     stopReadingFullStory();
                 } else {
                     speakOutFullStory();
-                }
+                }*/
+
+                speakOutFullStory();
+
             }
         });
+
+        //open Quotes Activty
+        ImageView openQuotesActivityButton = (ImageView) view.findViewById(R.id.fragmentShortStory_quotes_activity_Button);
+        openQuotesActivityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mainActivity, Main2ActivityQuotes.class);
+                startActivity(intent);
+            }
+        });
+
+
+        //display image
+        ImageView displayImageImageview = (ImageView) view.findViewById(R.id.fragmentShortStory_image_imageview);
+        if (story.getStoryImageAddress() == null) {
+            displayImageImageview.setVisibility(View.GONE);
+        } else if (story.getStoryImageAddress().isEmpty()) {
+            displayImageImageview.setVisibility(View.GONE);
+
+        } else {
+            try {
+
+                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("shortStoryImage/" + story.getStoryID() + "/" + "main");
+
+                Glide.with(getContext())
+                        .using(new FirebaseImageLoader())
+                        .load(storageReference)
+                        .crossFade(100)
+                        .fitCenter()
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .into(displayImageImageview);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                displayImageImageview.setVisibility(View.GONE);
+
+            }
+
+
+        }
 
         itemHolderCardview = (CardView) view.findViewById(R.id.fragmentShortStory_MainItemHolder_CardView);
 
@@ -215,7 +309,7 @@ public class ShortStoryFragment extends Fragment {
 
                     story.setStoryLikes(story.getStoryLikes() + 1);
 
-                    storyLikesText.setText(story.getStoryLikes() + "");
+                    storyLikesText.setText(story.getStoryLikes() + " likes");
                     Toast.makeText(mainActivity, "ThankYou! for liking the story", Toast.LENGTH_SHORT).show();
                     uploadLike(story.getStoryLikes());
 
@@ -232,16 +326,27 @@ public class ShortStoryFragment extends Fragment {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
                 if (checked) {
-                    Toast.makeText(mainActivity, "ThankYou! for Sharing the story", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mainActivity, "Opening Share Dialog", Toast.LENGTH_SHORT).show();
+
                     onShareClick();
 
 
-                    Answers.getInstance().logCustom(new CustomEvent("Share link").putCustomAttribute("Story name",story.getStoryTitle()));
+                    Answers.getInstance().logCustom(new CustomEvent("Share link").putCustomAttribute("Story name", story.getStoryTitle()));
 
                 }
             }
         });
 
+
+        ImageView shareStoryButton = (ImageView) view.findViewById(R.id.fragmentShortStory_sharestory_Button);
+        shareStoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onShareClick();
+
+                Answers.getInstance().logCustom(new CustomEvent("Share link").putCustomAttribute("Story name", story.getStoryTitle()));
+            }
+        });
 
         //change for material sheet and changing NIGHT MODE
         final MaterialSheetFab materialSheetFab;
@@ -299,6 +404,9 @@ public class ShortStoryFragment extends Fragment {
             @Override
             public void onShowSheet() {
                 Toast.makeText(mainActivity, "Sheet open", Toast.LENGTH_SHORT).show();
+
+                Answers.getInstance().logCustom(new CustomEvent("Night Mode").putCustomAttribute("Story name", story.getStoryTitle()));
+
                 // Called when the material sheet's "show" animation starts.
             }
 
@@ -354,7 +462,7 @@ public class ShortStoryFragment extends Fragment {
     private void onNormalMode() {
 
         itemHolderCardview.setCardBackgroundColor(getResources().getColor(R.color.colorWhiteBg));
-        titleText.setTextColor(getResources().getColor(R.color.colorBlueTitle));
+        titleText.setTextColor(getResources().getColor(R.color.colorPrimary));
         descriptionText.setTextColor(getResources().getColor(R.color.colorBlackText));
 
         bookLinkText.setTextColor(getResources().getColor(R.color.colorLightBlackText));
@@ -410,7 +518,15 @@ public class ShortStoryFragment extends Fragment {
             // FirebaseCrash.log("Showing spannable text");
             String definition = textToShow;
             descriptionText.setMovementMethod(LinkMovementMethod.getInstance());
-            descriptionText.setText(definition, TextView.BufferType.SPANNABLE);
+            //descriptionText.setText(definition, TextView.BufferType.SPANNABLE);
+
+            //formatting text
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                descriptionText.setText(Html.fromHtml(definition, Html.FROM_HTML_MODE_COMPACT), TextView.BufferType.SPANNABLE);
+            } else {
+                descriptionText.setText(Html.fromHtml(definition), TextView.BufferType.SPANNABLE);
+            }
+            //, TextView.BufferType.SPANNABLE
 
             Spannable spans = (Spannable) descriptionText.getText();
             BreakIterator iterator = BreakIterator.getWordInstance(Locale.UK);
@@ -479,7 +595,7 @@ public class ShortStoryFragment extends Fragment {
                 } else {
                     wordMeaningTextview.setText("No Meaning Found");
 
-                    Answers.getInstance().logCustom(new CustomEvent("Meaning Failed").putCustomAttribute("word",mWord));
+                    Answers.getInstance().logCustom(new CustomEvent("Meaning Failed").putCustomAttribute("word", mWord));
 
                 }
             }
@@ -510,6 +626,7 @@ public class ShortStoryFragment extends Fragment {
 
     private void onShareClick() {
 
+        showDialog();
         Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
                 .setLink(Uri.parse("https://goo.gl/UG9hPL?storyID=" + story.getStoryID()))
                 .setDynamicLinkDomain("x87w4.app.goo.gl")
@@ -520,7 +637,7 @@ public class ShortStoryFragment extends Fragment {
                         new DynamicLink.SocialMetaTagParameters.Builder()
                                 .setTitle(story.getStoryTitle())
                                 .setDescription(story.getStoryBookName() + " by " + story.getStoryAuthorNAme())
-                                .setImageUrl(Uri.parse("https://firebasestorage.googleapis.com/v0/b/short-story-c4712.appspot.com/o/ssicon.png?alt=media&token=578b3bd8-6ce7-453b-8855-a44c0e16bd78"))
+                                .setImageUrl(Uri.parse(story.getStoryImageAddress()))
                                 .build())
                 .setGoogleAnalyticsParameters(
                         new DynamicLink.GoogleAnalyticsParameters.Builder()
@@ -554,12 +671,20 @@ public class ShortStoryFragment extends Fragment {
         tts = new TextToSpeech(mainActivity, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int i) {
-                tts.setLanguage(Locale.UK);
-                tts.speak(story.getStoryFull(), TextToSpeech.QUEUE_FLUSH, null);
-                tts.setSpeechRate(0.5f);
+                if(i ==TextToSpeech.SUCCESS) {
+                    tts.setLanguage(Locale.UK);
+                    tts.setSpeechRate(0.75f);
+                    try {
+                        tts.speak(story.getStoryFull(), TextToSpeech.QUEUE_FLUSH, null);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                }else{
+                   // Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
-
 
     }
 
@@ -572,6 +697,7 @@ public class ShortStoryFragment extends Fragment {
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shortUrl
                 + "\n\nRead Full Story");
         startActivity(Intent.createChooser(sharingIntent, "Share Story via"));
+        hideDialog();
 
     }
 
@@ -595,4 +721,14 @@ public class ShortStoryFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    public void showDialog() {
+        progressDialog = new ProgressDialog(mainActivity);
+        progressDialog.setMessage("Please wait..Creating link");
+        progressDialog.setCancelable(true);
+        progressDialog.show();
+    }
+
+    public void hideDialog() {
+        progressDialog.cancel();
+    }
 }

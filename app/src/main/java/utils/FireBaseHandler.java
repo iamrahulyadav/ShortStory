@@ -69,6 +69,112 @@ public class FireBaseHandler {
 
     }
 
+    public void uploadQuotes(final Quotes quotes, final OnQuoteslistener onQuoteslistener) {
+
+
+        mDatabaseRef = mFirebaseDatabase.getReference().child("Quotes/");
+
+        quotes.setQuotesID(mDatabaseRef.push().getKey());
+
+        DatabaseReference mDatabaseRef1 = mFirebaseDatabase.getReference().child("Quotes/" + quotes.getQuotesID());
+
+
+        mDatabaseRef1.setValue(quotes).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                onQuoteslistener.onQuotesDownLoad(quotes, true);
+                onQuoteslistener.onQuotesUpload(true);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("Failed to Upload Story", e.getMessage());
+
+                onQuoteslistener.onQuotesUpload(false);
+                onQuoteslistener.onQuotesDownLoad(null, false);
+            }
+        });
+
+
+    }
+
+    public void downloadQuotesist(int limit, final OnQuoteslistener onQuoteslistener) {
+
+
+        mDatabaseRef = mFirebaseDatabase.getReference().child("Quotes/");
+
+        Query myref2 = mDatabaseRef.limitToLast(limit);
+
+        myref2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<Quotes> quotesArrayList = new ArrayList<Quotes>();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    Quotes quotes = snapshot.getValue(Quotes.class);
+                    if (quotes != null) {
+
+                        quotes.setQuotesID(snapshot.getKey());
+
+                    }
+                    quotesArrayList.add(quotes);
+                }
+
+                Collections.reverse(quotesArrayList);
+
+                onQuoteslistener.onQuotesListDownLoad(quotesArrayList, true);
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                onQuoteslistener.onQuotesListDownLoad(null, false);
+
+            }
+        });
+
+
+    }
+
+    public void downloadQuotesist(int limit, String lastQuotesID, final OnQuoteslistener onQuoteslistener) {
+
+
+        mDatabaseRef = mFirebaseDatabase.getReference().child("Quotes/");
+
+        Query myref2 = mDatabaseRef.orderByKey().limitToLast(limit).endAt(lastQuotesID);
+
+        myref2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<Quotes> quotesArrayList = new ArrayList<Quotes>();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Quotes quotes = snapshot.getValue(Quotes.class);
+                    if (quotes != null) {
+                        quotes.setQuotesID(snapshot.getKey());
+                    }
+                    quotesArrayList.add(quotes);
+                }
+
+                quotesArrayList.remove(quotesArrayList.size() - 1);
+                Collections.reverse(quotesArrayList);
+                onQuoteslistener.onQuotesListDownLoad(quotesArrayList, true);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                onQuoteslistener.onQuotesListDownLoad(null, false);
+
+            }
+        });
+
+
+    }
+
+
     public void downloadStory(String storyUID, final OnStorylistener onStorylistener) {
 
 
@@ -199,9 +305,9 @@ public class FireBaseHandler {
 
         Map post = new HashMap();
 
-        post.put("shortStory/"+storyUID+"/pushNotification" ,false);
+        post.put("shortStory/" + storyUID + "/pushNotification", false);
 
-        post.put("shortStory/"+storyUID+"/storyLikes" ,likes);
+        post.put("shortStory/" + storyUID + "/storyLikes", likes);
 
 
         myRef.updateChildren(post).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -218,6 +324,31 @@ public class FireBaseHandler {
         });
 
 
+    }
+
+    public void uploadQuotesLikes(String quotesUID, int likes, final OnLikeListener onLikeListener) {
+
+        DatabaseReference myRef = mFirebaseDatabase.getReference();
+
+        Map post = new HashMap();
+
+        post.put("Quotes/" + quotesUID + "/pushNotification", false);
+
+        post.put("Quotes/" + quotesUID + "/quotesLikes", likes);
+
+
+        myRef.updateChildren(post).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                onLikeListener.onLikeUpload(true);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                onLikeListener.onLikeUpload(false);
+            }
+        });
 
 
     }
@@ -237,6 +368,17 @@ public class FireBaseHandler {
 
 
         public void onStoryUpload(boolean isSuccessful);
+    }
+
+    public interface OnQuoteslistener {
+
+
+        public void onQuotesDownLoad(Quotes quotes, boolean isSuccessful);
+
+        public void onQuotesListDownLoad(ArrayList<Quotes> quotesArrayListList, boolean isSuccessful);
+
+
+        public void onQuotesUpload(boolean isSuccessful);
     }
 
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_main2_activity_quotes"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+     app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="app.story.craftystudio.shortstory.Main2ActivityQuotes"
+    tools:showIn="@layout/activity_main2_quotes">
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/mainActivity2_quotes_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorLightWhiteText"
+        android:visibility="visible"></android.support.v4.view.ViewPager>
+
+
+</RelativeLayout>

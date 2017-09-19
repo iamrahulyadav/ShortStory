@@ -46,8 +46,10 @@ import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
+import com.stephentuso.welcome.WelcomeHelper;
 
 import io.fabric.sdk.android.Fabric;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,11 +80,16 @@ public class MainActivity extends AppCompatActivity
 
     boolean isSplashScreen = true;
 
+    WelcomeHelper welcomeScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
+
+        //tutorial display
+        welcomeScreen = new WelcomeHelper(this, MyWelcomeActivity.class);
+        welcomeScreen.show(savedInstanceState);
 
         setContentView(R.layout.splash_main);
 
@@ -143,8 +150,11 @@ public class MainActivity extends AppCompatActivity
                             //Toast.makeText(MainActivity.this, "Story id " + shortStoryID, Toast.LENGTH_SHORT).show();
 
                             //download story
-                            downloadStory(shortStoryID);
-
+                            if (shortStoryID != null) {
+                                downloadStory(shortStoryID);
+                            } else {
+                                openQuotesActivity();
+                            }
                             // downloadNewsArticle(newsArticleID);
 
                         } else {
@@ -191,6 +201,12 @@ public class MainActivity extends AppCompatActivity
                 });
     }
 
+    private void openQuotesActivity() {
+        downloadStoryList();
+        Intent intent = new Intent(MainActivity.this, Main2ActivityQuotes.class);
+        startActivity(intent);
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -223,6 +239,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
+
             return true;
         }
 
@@ -252,6 +270,11 @@ public class MainActivity extends AppCompatActivity
                     "\n\n Read Short Inspirational Stories Daily \n Download it now \n ");
             startActivity(Intent.createChooser(sharingIntent, "Share Story App via"));
 
+        } else if (id == R.id.nav_quotes) {
+            Intent intent = new Intent(MainActivity.this, Main2ActivityQuotes.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_tutlorial) {
+            welcomeScreen.forceShow();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -493,7 +516,6 @@ public class MainActivity extends AppCompatActivity
         interstitialAdTimer(45000);
 
 
-
         mInterstitialAd.setAdListener(new AdListener() {
 
             @Override
@@ -507,7 +529,7 @@ public class MainActivity extends AppCompatActivity
                 // Code to be executed when an ad request fails.
                 Log.i("Ads", "onAdFailedToLoad");
 
-                Answers.getInstance().logCustom(new CustomEvent("Ad failed to load").putCustomAttribute("Failed index",errorCode));
+                Answers.getInstance().logCustom(new CustomEvent("Ad failed to load").putCustomAttribute("Failed index", errorCode));
 
             }
 
@@ -595,4 +617,9 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        welcomeScreen.onSaveInstanceState(outState);
+    }
 }

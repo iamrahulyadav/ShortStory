@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="app.story.craftystudio.shortstory">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,7 +21,6 @@
             </intent-filter>
         </activity>
 
-
         <service android:name="utils.FirebasePushNotification">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -29,7 +30,14 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="acc1b0b9ec29985ac9dbef0f05837dac47e0b387" />
+
+        <activity
+            android:name=".Main2ActivityQuotes"
+            android:label="@string/title_activity_main2_quotes"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <activity android:name=".MyWelcomeActivity"
+            android:theme="@style/WelcomeScreenTheme"/>
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

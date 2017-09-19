@@ -19,7 +19,7 @@ public class AppRater {
     private final static String APP_PNAME = "app.story.craftystudio.shortstory";// Package Name
 
     private final static int DAYS_UNTIL_PROMPT = 0;//Min number of days
-    private final static int LAUNCHES_UNTIL_PROMPT = 7;//Min number of launches
+    private final static int LAUNCHES_UNTIL_PROMPT = 3;//Min number of launches
 
     public static void app_launched(Context mContext) {
         SharedPreferences prefs = mContext.getSharedPreferences("apprater", 0);
@@ -86,6 +86,13 @@ public class AppRater {
                     .setNeutralButton("Not now", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
+
+                            SharedPreferences prefs = mContext.getSharedPreferences("apprater", 0);
+                            SharedPreferences.Editor editor = prefs.edit();
+
+                            editor.putLong("launch_count", 0);
+                            editor.apply();
+
                             dialogInterface.dismiss();
 
                         }
