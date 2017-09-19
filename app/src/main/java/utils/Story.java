@@ -1,5 +1,7 @@
 package utils;
 
+import com.google.android.gms.ads.NativeExpressAdView;
+
 import java.io.Serializable;
 
 /**
@@ -21,6 +23,8 @@ public class Story implements Serializable {
     private String storyImageAddress;
     private int storyLikes;
     boolean pushNotification;
+
+    NativeExpressAdView nativeExpressAdView;
 
     public String getStoryImageAddress() {
         return storyImageAddress;
@@ -122,5 +126,11 @@ public class Story implements Serializable {
         this.storyDate = storyDate;
     }
 
+    public NativeExpressAdView getNativeExpressAdView() {
+        return nativeExpressAdView;
+    }
 
+    public void setNativeExpressAdView(NativeExpressAdView nativeExpressAdView) {
+        this.nativeExpressAdView = nativeExpressAdView;
+    }
 }

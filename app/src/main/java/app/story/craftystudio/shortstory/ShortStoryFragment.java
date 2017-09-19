@@ -44,6 +44,7 @@ import com.google.firebase.dynamiclinks.ShortDynamicLink;
 
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -403,7 +404,7 @@ public class ShortStoryFragment extends Fragment {
         materialSheetFab.setEventListener(new MaterialSheetFabEventListener() {
             @Override
             public void onShowSheet() {
-                Toast.makeText(mainActivity, "Sheet open", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mainActivity, "Sheet open", Toast.LENGTH_SHORT).show();
 
                 Answers.getInstance().logCustom(new CustomEvent("Night Mode").putCustomAttribute("Story name", story.getStoryTitle()));
 
@@ -432,6 +433,10 @@ public class ShortStoryFragment extends Fragment {
         behavior = BottomSheetBehavior.from(bottomSheet);
 
 
+        if (story.getNativeExpressAdView() != null) {
+            LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragmentShortStory_mainView_linearLayout);
+            linearLayout.addView(story.getNativeExpressAdView());
+        }
         return view;
     }
 

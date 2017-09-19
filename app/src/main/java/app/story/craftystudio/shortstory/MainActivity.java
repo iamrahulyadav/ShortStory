@@ -28,6 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,8 +38,10 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.NativeExpressAdView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
@@ -349,6 +352,7 @@ public class MainActivity extends AppCompatActivity
                         MainActivity.this.mStoryList.add(story);
                     }
 
+                    initializeNativeAds();
                     mPagerAdapter.notifyDataSetChanged();
 
                 } else {
@@ -401,6 +405,7 @@ public class MainActivity extends AppCompatActivity
                         MainActivity.this.mStoryList.add(story);
                     }
 
+                    initializeNativeAds();
                     mPagerAdapter.notifyDataSetChanged();
 
                 } else {
@@ -506,6 +511,31 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public void initializeNativeAds(){
+        for (Story story : mStoryList){
+
+            if (story.getNativeExpressAdView() == null){
+                final NativeExpressAdView adView = new NativeExpressAdView(this);
+
+                adView.setAdUnitId("ca-app-pub-8455191357100024/7311187776");
+                adView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+
+                adView.setAdSize(new AdSize(320, 132));
+                adView.loadAd(new AdRequest.Builder().build());
+                adView.setAdListener(new AdListener(){
+                    @Override
+                    public void onAdFailedToLoad(int i) {
+                        super.onAdFailedToLoad(i);
+                        Log.d("native ads", "onAdFailedToLoad: "+i);
+                    }
+                });
+                story.setNativeExpressAdView(adView);
+
+            }
+
+        }
+
+    }
 
     public void initializeInterstitialAds() {
 
