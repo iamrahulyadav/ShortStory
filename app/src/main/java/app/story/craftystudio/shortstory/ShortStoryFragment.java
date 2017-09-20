@@ -123,10 +123,14 @@ public class ShortStoryFragment extends Fragment {
         if (getArguments() != null) {
             this.story = (Story) getArguments().getSerializable("Story");
 
-            Answers.getInstance().logContentView(new ContentViewEvent()
-                    .putContentName(story.getStoryTitle())
-                    .putContentId(story.getStoryID())
-            );
+            try {
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName(story.getStoryTitle())
+                        .putContentId(story.getStoryID())
+                );
+            }catch(Exception e){
+                e.printStackTrace();
+            }
 
         }
 
@@ -153,13 +157,20 @@ public class ShortStoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         if (story.getObjectType() == 1) {
+            View view = inflater.inflate(R.layout.nativead_card_layout, container, false);
+            LinearLayout linearLayout = (LinearLayout)view.findViewById(R.id.nativead_container_linearLayout);
+
             NativeExpressAdView nativeExpressAdView= story.getNativeExpressAdView();
 
             if (nativeExpressAdView.getParent() != null) {
                 ((ViewGroup) nativeExpressAdView.getParent()).removeView(nativeExpressAdView);
             }
 
-            return story.getNativeExpressAdView();
+
+            linearLayout.removeAllViews();
+            linearLayout.addView(nativeExpressAdView);
+
+            return view;
         }
 
         View view = inflater.inflate(R.layout.fragment_short_story, container, false);
@@ -713,6 +724,13 @@ public class ShortStoryFragment extends Fragment {
     }
 
     private void openShareDialog(Uri shortUrl) {
+
+        try {
+            Answers.getInstance().logCustom(new CustomEvent("Share link created").putCustomAttribute("Content Id", story.getStoryID())
+                    .putCustomAttribute("Shares", story.getStoryTitle()));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
 

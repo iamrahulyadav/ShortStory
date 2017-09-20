@@ -59,6 +59,7 @@ import java.util.List;
 
 import utils.AppRater;
 import utils.FireBaseHandler;
+import utils.RandomSplashQuotes;
 import utils.Story;
 import utils.ZoomOutPageTransformer;
 
@@ -96,6 +97,14 @@ public class MainActivity extends AppCompatActivity
         welcomeScreen.show(savedInstanceState);
 
         setContentView(R.layout.splash_main);
+
+        try{
+            RandomSplashQuotes randomSplashQuotes =new RandomSplashQuotes();
+            TextView textView =(TextView)findViewById(R.id.splash_quote_textView);
+            textView.setText(randomSplashQuotes.randomQuote());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
         MobileAds.initialize(this, "ca-app-pub-8455191357100024~5605269189");
 
@@ -160,14 +169,14 @@ public class MainActivity extends AppCompatActivity
                                 downloadStory(shortStoryID);
                                 try {
                                     Answers.getInstance().logCustom(new CustomEvent("Via dyanamic link").putCustomAttribute("Story id", shortStoryID));
-                                }catch (Exception e){
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             } else {
                                 openQuotesActivity();
                                 try {
                                     Answers.getInstance().logCustom(new CustomEvent("Via dyanamic link quotes").putCustomAttribute("Quotes", 1));
-                                }catch (Exception e){
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -191,7 +200,7 @@ public class MainActivity extends AppCompatActivity
                                     downloadStory(storyID);
                                     try {
                                         Answers.getInstance().logCustom(new CustomEvent("Via push notification").putCustomAttribute("Story id", storyID));
-                                    }catch (Exception e){
+                                    } catch (Exception e) {
                                         e.printStackTrace();
                                     }
                                     //   Toast.makeText(this, "Story id is = "+storyID, Toast.LENGTH_SHORT).show();
@@ -530,25 +539,32 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void initializeNativeAds(){
+    public void initializeNativeAds() {
 
+        DisplayMetrics displayMetrics = MainActivity.this.getResources().getDisplayMetrics();
+        int dpHeight = (int) (displayMetrics.heightPixels / displayMetrics.density);
+        int dpWidth = (int) (displayMetrics.widthPixels / displayMetrics.density);
 
-        for (Story story : mStoryList){
+        for (Story story : mStoryList) {
 
-            if (story.getNativeExpressAdView() == null){
+            if (story.getNativeExpressAdView() == null) {
 
-                 NativeExpressAdView adView = new NativeExpressAdView(this);
+                NativeExpressAdView adView = new NativeExpressAdView(this);
 
                 adView.setAdUnitId("ca-app-pub-8455191357100024/7311187776");
                 adView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
-                adView.setAdSize(new AdSize(320, 132));
+                adView.setAdSize(new AdSize(dpWidth - 64, 150));
                 adView.loadAd(new AdRequest.Builder().build());
-                adView.setAdListener(new AdListener(){
+                adView.setAdListener(new AdListener() {
                     @Override
                     public void onAdFailedToLoad(int i) {
                         super.onAdFailedToLoad(i);
-                        Log.d("native ads", "onAdFailedToLoad: "+i);
+                        try {
+                            Answers.getInstance().logCustom(new CustomEvent("Ad failed to load").putCustomAttribute("placement", "bottom").putCustomAttribute("error code", i));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
@@ -563,15 +579,12 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        DisplayMetrics displayMetrics = MainActivity.this.getResources().getDisplayMetrics();
-        int dpHeight =(int)(displayMetrics.heightPixels / displayMetrics.density);
-        int dpWidth = (int)(displayMetrics.widthPixels / displayMetrics.density);
 
-        for (int i=0; i<mStoryList.size(); i++){
+        for (int i = 0; i < mStoryList.size(); i++) {
 
-            if (i % 3 ==2){
+            if (i % 3 == 2) {
 
-                if (mStoryList.get(i).getObjectType()!=1) {
+                if (mStoryList.get(i).getObjectType() != 1) {
 
 
                     Story nativeAdsStory = new Story();
@@ -581,13 +594,17 @@ public class MainActivity extends AppCompatActivity
                     adView.setAdUnitId("ca-app-pub-8455191357100024/7223557860");
                     adView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
-                    adView.setAdSize(new AdSize(dpWidth-32, 480));
+                    adView.setAdSize(new AdSize(dpWidth - 24, 3 * (dpHeight / 4)));
                     adView.loadAd(new AdRequest.Builder().build());
                     adView.setAdListener(new AdListener() {
                         @Override
                         public void onAdFailedToLoad(int i) {
                             super.onAdFailedToLoad(i);
-                            Log.d("native ads", "onAdFailedToLoad: " + i);
+                            try {
+                                Answers.getInstance().logCustom(new CustomEvent("Ad failed to load").putCustomAttribute("placement", "top").putCustomAttribute("error code", i));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                     nativeAdsStory.setNativeExpressAdView(adView);
@@ -598,8 +615,6 @@ public class MainActivity extends AppCompatActivity
             }
 
         }
-
-
 
 
     }
@@ -681,7 +696,7 @@ public class MainActivity extends AppCompatActivity
 
         if (adsCount > 2 && pendingInterstitialAd) {
             if (mInterstitialAd.isLoaded()) {
-              //  mInterstitialAd.show();
+                //  mInterstitialAd.show();
             } else {
                 mInterstitialAd.loadAd(new AdRequest.Builder().build());
 

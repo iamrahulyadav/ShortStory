@@ -24,7 +24,7 @@ public class Story implements Serializable {
     private int storyLikes , objectType;
     boolean pushNotification;
 
-    NativeExpressAdView nativeExpressAdView;
+    transient NativeExpressAdView nativeExpressAdView;
 
     public String getStoryImageAddress() {
         return storyImageAddress;
