@@ -4,9 +4,13 @@
     <color name="colorPrimaryDark">#ffb32842</color>
     <color name="colorAccent">#2f65d2</color>
 
-    <color name="colorSepiaBg">#f3e9ce</color>
+       <color name="colorSepiaBg">#f3e9ce</color>
     <color name="colorSepiaText">#59432b</color>
     <color name="colorLightSepiaText">#c7604b35</color>
+
+    <color name="colorTurorial1">#7d42ce</color>
+    <color name="colorTurorial2">#fd9c19</color>
+
 
     <color name="colorDarkBg">#1e1e1e</color>
     <color name="colorWhiteText">#f7f5f5</color>

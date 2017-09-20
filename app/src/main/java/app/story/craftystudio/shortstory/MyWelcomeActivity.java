@@ -9,23 +9,26 @@ import com.stephentuso.welcome.WelcomeConfiguration;
  * Created by Aisha on 9/16/2017.
  */
 
-public class MyWelcomeActivity extends WelcomeActivity{
+public class MyWelcomeActivity extends WelcomeActivity {
 
     @Override
     protected WelcomeConfiguration configuration() {
         return new WelcomeConfiguration.Builder(this)
-                .defaultBackgroundColor(R.color.colorAccent)
-                .page(new TitlePage(R.drawable.ic_action_quotes,
-                        "Title")
+                .defaultBackgroundColor(R.color.colorTurorial1)
+                .page(new BasicPage(R.drawable.illustr1,
+                        "INSPIRING STORIES DAILY "
+                        , "Once you learn to READ, you will be forever FREE")
+                        .background(R.color.colorTurorial1)
                 )
-                .page(new BasicPage(R.drawable.ic_action_speaker,
-                        "Header",
-                        "More text.")
+                .page(new BasicPage(R.drawable.illustr2,
+                        "INSPIRING QUOTES",
+                        "Keep Reading It's one of the most Marvelous Adventure any one can have")
+                        .background(R.color.colorTurorial2)
+                )
+                .page(new BasicPage(R.drawable.illustr3,
+                        "LIKE AND SHARE",
+                        "It's time to inspire others by sharing stories and quotes")
                         .background(R.color.colorPrimary)
-                )
-                .page(new BasicPage(R.drawable.ic_menu_camera,
-                        "Lorem ipsum",
-                        "dolor sit amet.")
                 )
                 .swipeToDismiss(true)
                 .build();

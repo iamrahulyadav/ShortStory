@@ -569,7 +569,6 @@ public class MainActivity extends AppCompatActivity
 
         for (int i=0; i<mStoryList.size(); i++){
 
-
             if (i % 3 ==2){
 
                 if (mStoryList.get(i).getObjectType()!=1) {
