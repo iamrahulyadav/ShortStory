@@ -199,9 +199,9 @@
                         <ImageView
                             android:id="@+id/fragmentShortStory_image_imageview"
                             android:layout_width="match_parent"
-                            android:layout_height="120dp"
+                            android:layout_height="200dp"
                             android:layout_margin="4dp"
-                            android:scaleType="fitCenter" />
+                            android:scaleType="fitXY" />
 
 
                         <LinearLayout
