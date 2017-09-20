@@ -36,6 +36,7 @@ import com.crashlytics.android.answers.ContentViewEvent;
 import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.answers.RatingEvent;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.ads.NativeExpressAdView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.dynamiclinks.DynamicLink;
@@ -150,6 +151,17 @@ public class ShortStoryFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        if (story.getObjectType() == 1) {
+            NativeExpressAdView nativeExpressAdView= story.getNativeExpressAdView();
+
+            if (nativeExpressAdView.getParent() != null) {
+                ((ViewGroup) nativeExpressAdView.getParent()).removeView(nativeExpressAdView);
+            }
+
+            return story.getNativeExpressAdView();
+        }
+
         View view = inflater.inflate(R.layout.fragment_short_story, container, false);
         //initializeView
 
@@ -433,9 +445,16 @@ public class ShortStoryFragment extends Fragment {
         behavior = BottomSheetBehavior.from(bottomSheet);
 
 
-        if (story.getNativeExpressAdView() != null) {
-            LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragmentShortStory_mainView_linearLayout);
-            linearLayout.addView(story.getNativeExpressAdView());
+        NativeExpressAdView nativeExpressAdView =story.getNativeExpressAdView();
+        if (nativeExpressAdView != null) {
+            LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragmentShortStory_adView_linearLayout);
+            linearLayout.removeAllViews();
+
+            if (nativeExpressAdView.getParent() != null) {
+                ((ViewGroup) nativeExpressAdView.getParent()).removeView(nativeExpressAdView);
+            }
+
+            linearLayout.addView(nativeExpressAdView);
         }
         return view;
     }
@@ -676,16 +695,16 @@ public class ShortStoryFragment extends Fragment {
         tts = new TextToSpeech(mainActivity, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int i) {
-                if(i ==TextToSpeech.SUCCESS) {
+                if (i == TextToSpeech.SUCCESS) {
                     tts.setLanguage(Locale.UK);
                     tts.setSpeechRate(0.75f);
                     try {
                         tts.speak(story.getStoryFull(), TextToSpeech.QUEUE_FLUSH, null);
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }else{
-                   // Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT).show();
                 }
 
             }

@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -96,6 +97,8 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.splash_main);
 
+        MobileAds.initialize(this, "ca-app-pub-8455191357100024~5605269189");
+
         fireBaseHandler = new FireBaseHandler();
         openDynamicLink();
     }
@@ -132,8 +135,8 @@ public class MainActivity extends AppCompatActivity
         // FirebaseMessaging.getInstance().subscribeToTopic("tester");
         //Log.d("push notifiaction", "onCreate: "+ FirebaseInstanceId.getInstance().getToken());
 
-        MobileAds.initialize(this, "ca-app-pub-8455191357100024~5605269189");
-        initializeInterstitialAds();
+
+        //initializeInterstitialAds();
 
     }
 
@@ -460,7 +463,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onPageSelected(int position) {
 
-                checkInterstitialAds();
+                //checkInterstitialAds();
             }
 
             @Override
@@ -528,10 +531,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void initializeNativeAds(){
+
+
         for (Story story : mStoryList){
 
             if (story.getNativeExpressAdView() == null){
-                final NativeExpressAdView adView = new NativeExpressAdView(this);
+
+                 NativeExpressAdView adView = new NativeExpressAdView(this);
 
                 adView.setAdUnitId("ca-app-pub-8455191357100024/7311187776");
                 adView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
@@ -544,12 +550,58 @@ public class MainActivity extends AppCompatActivity
                         super.onAdFailedToLoad(i);
                         Log.d("native ads", "onAdFailedToLoad: "+i);
                     }
+
+                    @Override
+                    public void onAdLoaded() {
+                        super.onAdLoaded();
+                        Log.d("native ads", "onAdFailedToLoad: ");
+                    }
                 });
                 story.setNativeExpressAdView(adView);
 
             }
 
         }
+
+        DisplayMetrics displayMetrics = MainActivity.this.getResources().getDisplayMetrics();
+        int dpHeight =(int)(displayMetrics.heightPixels / displayMetrics.density);
+        int dpWidth = (int)(displayMetrics.widthPixels / displayMetrics.density);
+
+        for (int i=0; i<mStoryList.size(); i++){
+
+
+            if (i % 3 ==2){
+
+                if (mStoryList.get(i).getObjectType()!=1) {
+
+
+                    Story nativeAdsStory = new Story();
+                    nativeAdsStory.setObjectType(1);
+                    NativeExpressAdView adView = new NativeExpressAdView(this);
+
+                    adView.setAdUnitId("ca-app-pub-8455191357100024/7223557860");
+                    adView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+
+                    adView.setAdSize(new AdSize(dpWidth-32, 480));
+                    adView.loadAd(new AdRequest.Builder().build());
+                    adView.setAdListener(new AdListener() {
+                        @Override
+                        public void onAdFailedToLoad(int i) {
+                            super.onAdFailedToLoad(i);
+                            Log.d("native ads", "onAdFailedToLoad: " + i);
+                        }
+                    });
+                    nativeAdsStory.setNativeExpressAdView(adView);
+
+                    mStoryList.add(i, nativeAdsStory);
+                }
+
+            }
+
+        }
+
+
+
 
     }
 
@@ -630,7 +682,7 @@ public class MainActivity extends AppCompatActivity
 
         if (adsCount > 2 && pendingInterstitialAd) {
             if (mInterstitialAd.isLoaded()) {
-                mInterstitialAd.show();
+              //  mInterstitialAd.show();
             } else {
                 mInterstitialAd.loadAd(new AdRequest.Builder().build());
 

@@ -21,7 +21,7 @@ public class Story implements Serializable {
 
 
     private String storyImageAddress;
-    private int storyLikes;
+    private int storyLikes , objectType;
     boolean pushNotification;
 
     NativeExpressAdView nativeExpressAdView;
@@ -132,5 +132,13 @@ public class Story implements Serializable {
 
     public void setNativeExpressAdView(NativeExpressAdView nativeExpressAdView) {
         this.nativeExpressAdView = nativeExpressAdView;
+    }
+
+    public int getObjectType() {
+        return objectType;
+    }
+
+    public void setObjectType(int objectType) {
+        this.objectType = objectType;
     }
 }

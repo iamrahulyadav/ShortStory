@@ -178,7 +178,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:id="@+id/fragmentShortStory_mainView_linearLayout"
+                        android:layout_marginBottom="16dp"
                         android:orientation="vertical">
 
                         <TextView
@@ -312,6 +312,15 @@
                                 android:textSize="14sp"
 
                                 />
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:orientation="vertical"
+                                android:id="@+id/fragmentShortStory_adView_linearLayout"
+                                android:layout_height="wrap_content">
+
+                            </LinearLayout>
 
 
                         </LinearLayout>
