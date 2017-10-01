@@ -29,6 +29,7 @@ public class RandomSplashQuotes {
 
         int random = (int) (Math.random() * (quotes.length-1));
 
+
         try {
             return quotes[random];
         } catch (Exception e) {
