@@ -334,7 +334,7 @@ public class ShortStoryFragment extends Fragment {
                     story.setStoryLikes(story.getStoryLikes() + 1);
 
                     storyLikesText.setText(story.getStoryLikes() + " likes");
-                    Toast.makeText(mainActivity, "ThankYou! for liking the story", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mainActivity, "ThankYou! for liking the story", Toast.LENGTH_SHORT).show();
                     uploadLike(story.getStoryLikes());
 
                     shineLikeButtonJava.setActivated(false);

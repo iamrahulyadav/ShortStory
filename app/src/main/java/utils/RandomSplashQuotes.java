@@ -19,12 +19,15 @@ public class RandomSplashQuotes {
             "\"Whenever you see a successful business, someone once made a courageous decision.\"",
             "\"A good plan violently executed now is better than a perfect plan executed next week.\"",
             "\"You may have to fight a battle more than once to win it.\"",
-            "\"The only way to do great work is to love what you do.\""
+            "\"The only way to do great work is to love what you do.\"",
+            "\"Style is a reflection of your attitude and your personality.\"",
+            "\"Personality is an unbroken series of successful gestures.\"",
+            "\"Personality is to a man what perfume is to a flower.\""
     };
 
     public String randomQuote() {
 
-        int random = (int) (Math.random() * 10);
+        int random = (int) (Math.random() * (quotes.length-1));
 
         try {
             return quotes[random];
