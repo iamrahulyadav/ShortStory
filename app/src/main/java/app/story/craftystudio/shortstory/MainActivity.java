@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity
     static boolean nightMode = false;
 
     int adsCount = 0;
-    private InterstitialAd mInterstitialAd;
+    static private InterstitialAd mInterstitialAd;
 
     private boolean pendingInterstitialAd;
     private Handler handler;
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity
         //Log.d("push notifiaction", "onCreate: "+ FirebaseInstanceId.getInstance().getToken());
 
 
-        //initializeInterstitialAds();
+        initializeInterstitialAds();
 
     }
 
@@ -554,7 +554,7 @@ public class MainActivity extends AppCompatActivity
                 adView.setAdUnitId("ca-app-pub-8455191357100024/7311187776");
                 adView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
-                adView.setAdSize(new AdSize(dpWidth - 64, 150));
+                adView.setAdSize(new AdSize(dpWidth - 64, 180));
                 adView.loadAd(new AdRequest.Builder().build());
                 adView.setAdListener(new AdListener() {
                     @Override
@@ -594,7 +594,7 @@ public class MainActivity extends AppCompatActivity
                     adView.setAdUnitId("ca-app-pub-8455191357100024/7223557860");
                     adView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
-                    adView.setAdSize(new AdSize(dpWidth - 24, 3 * (dpHeight / 4)));
+                    adView.setAdSize(new AdSize(dpWidth - 24, 4 * (dpHeight / 5)));
                     adView.loadAd(new AdRequest.Builder().build());
                     adView.setAdListener(new AdListener() {
                         @Override
@@ -625,7 +625,7 @@ public class MainActivity extends AppCompatActivity
         mInterstitialAd.setAdUnitId("ca-app-pub-8455191357100024/8750307275");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
-        interstitialAdTimer(45000);
+        //interstitialAdTimer(45000);
 
 
         mInterstitialAd.setAdListener(new AdListener() {
@@ -661,8 +661,8 @@ public class MainActivity extends AppCompatActivity
             public void onAdClosed() {
                 // Code to be executed when when the interstitial ad is closed.
                 Log.i("Ads", "onAdClosed");
-                adsCount = 0;
-                interstitialAdTimer(45000);
+                //adsCount = 0;
+                //interstitialAdTimer(45000);
 
                 mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
@@ -702,6 +702,20 @@ public class MainActivity extends AppCompatActivity
 
             }
         }
+    }
+
+    public static void showInterstitialAd() {
+
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+
+        } else if (mInterstitialAd.isLoading()) {
+
+        } else {
+            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+        }
+
     }
 
 

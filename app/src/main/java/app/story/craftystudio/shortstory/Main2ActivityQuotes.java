@@ -11,9 +11,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 
 import java.util.ArrayList;
 
@@ -25,7 +30,7 @@ public class Main2ActivityQuotes extends AppCompatActivity {
 
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
-
+    AdView mAdView;
 
     ArrayList<Quotes> mQuotesList = new ArrayList<>();
     FireBaseHandler fireBaseHandler;
@@ -54,6 +59,29 @@ public class Main2ActivityQuotes extends AppCompatActivity {
         fireBaseHandler = new FireBaseHandler();
         downloadQuotesList();
 
+        initializeBannerAd();
+    }
+
+    private void initializeBannerAd() {
+        mAdView = (AdView) findViewById(R.id.mainActivity2_banner_adview);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+        mAdView.setAdListener(new AdListener(){
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
     }
 
     private void initializeViewPager() {

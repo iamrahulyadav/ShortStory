@@ -16,8 +16,8 @@ public class MyWelcomeActivity extends WelcomeActivity {
         return new WelcomeConfiguration.Builder(this)
                 .defaultBackgroundColor(R.color.colorTurorial1)
                 .page(new BasicPage(R.drawable.illustr1,
-                        "INSPIRING STORIES DAILY "
-                        , "Once you learn to READ, you will be forever FREE")
+                        "Daily Personality Development tips"
+                        , "Become the best version of yourself")
                         .background(R.color.colorTurorial1)
                 )
                 .page(new BasicPage(R.drawable.illustr2,
@@ -27,7 +27,7 @@ public class MyWelcomeActivity extends WelcomeActivity {
                 )
                 .page(new BasicPage(R.drawable.illustr3,
                         "LIKE AND SHARE",
-                        "It's time to inspire others by sharing stories and quotes")
+                        "It's time to inspire others by sharing tips and quotes")
                         .background(R.color.colorPrimary)
                 )
                 .swipeToDismiss(true)

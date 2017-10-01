@@ -467,6 +467,16 @@ public class ShortStoryFragment extends Fragment {
 
             linearLayout.addView(nativeExpressAdView);
         }
+
+        Button button =(Button) view.findViewById(R.id.fragmentShortStory_recommendedapp_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                MainActivity.showInterstitialAd();
+            }
+        });
+
         return view;
     }
 
@@ -615,7 +625,7 @@ public class ShortStoryFragment extends Fragment {
 
     private void onWordTap(final String mWord) {
 
-
+/*
         speakOutWord(mWord);
         wordMeaningTextview.setText("Fetching Meaning for - " + mWord);
         StoryWordMeaning storyWordMeaning = new StoryWordMeaning(mWord, new StoryWordMeaning.OnWordMeaninglistener() {
@@ -635,7 +645,7 @@ public class ShortStoryFragment extends Fragment {
                 }
             }
         });
-        storyWordMeaning.execute();
+        storyWordMeaning.execute();*/
         //  Translation translation = new Translation(mWord);
         //translation.fetchTranslation(this);
 

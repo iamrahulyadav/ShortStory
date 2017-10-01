@@ -2,6 +2,7 @@ package utils;
 
 import android.os.AsyncTask;
 import android.util.Log;
+/*
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,14 +19,15 @@ import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import cz.msebera.android.httpclient.protocol.BasicHttpContext;
 import cz.msebera.android.httpclient.protocol.HttpContext;
+*/
 
 /**
  * Created by Aisha on 8/12/2017.
  */
 
-public class StoryWordMeaning extends AsyncTask<Void, Void, String> {
+public class StoryWordMeaning {
 
-
+/*
     String mWord;
     OnWordMeaninglistener onWordMeaninglistener;
 
@@ -143,5 +145,5 @@ public class StoryWordMeaning extends AsyncTask<Void, Void, String> {
 
         public void onWordMeaningDownLoad(ArrayList<String> wordMeaning, boolean isSuccessful);
 
-    }
+    }*/
 }
