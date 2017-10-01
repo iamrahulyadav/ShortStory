@@ -14,21 +14,20 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:scaleType="centerInside"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@drawable/new_icon_book" />
+        android:src="@drawable/icon_bgless" />
 
     <TextView
+        android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="serif"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Short Story"
+        android:text="Make Me Better"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textStyle="normal"
-        android:id="@+id/textView2" />
+        android:textStyle="normal" />
 
     <TextView
         android:id="@+id/textView"

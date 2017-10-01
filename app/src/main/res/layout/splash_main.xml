@@ -20,24 +20,24 @@
         android:id="@+id/splash_icon_imageview"
         android:layout_width="wrap_content"
         android:layout_height="128dp"
-        android:src="@drawable/new_icon_book" />
+        android:src="@drawable/icon_bgless" />
 
 
-    <TextView
-        android:id="@+id/splash_quote_textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:fontFamily="sans-serif-condensed"
-        android:text="Story Box"
-        android:textAlignment="center"
-        android:textColor="@color/colorWhiteBg"
-        android:textSize="16sp"
-        android:textStyle="bold"
-android:layout_margin="16dp"
-        />
+        <TextView
+            android:id="@+id/splash_quote_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:fontFamily="sans-serif-condensed"
+            android:text="Make Me Better"
+            android:textAlignment="center"
+            android:textColor="@color/colorWhiteBg"
+            android:textSize="16sp"
+            android:textStyle="bold"
+    android:layout_margin="16dp"
+            />
 
-    <TextView
+        <TextView
         android:id="@+id/splash_title_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,7 +45,7 @@ android:layout_margin="16dp"
         android:layout_below="@+id/splash_icon_imageview"
         android:layout_marginTop="8dp"
         android:fontFamily="serif"
-        android:text="Story Box"
+        android:text="Make Me Better"
         android:textAlignment="center"
         android:textColor="@color/colorWhiteBg"
         android:textSize="18sp"
@@ -59,7 +59,7 @@ android:layout_margin="16dp"
         android:layout_centerInParent="true"
         android:layout_weight="1"
         android:fontFamily="serif"
-        android:text="Daily Inspirational Short stories"
+        android:text="Daily Personality Development Tips"
         android:textAlignment="center"
         android:textColor="@color/colorWhiteBg"
         android:textSize="14sp"

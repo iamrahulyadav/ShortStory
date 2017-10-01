@@ -737,8 +737,8 @@ public class ShortStoryFragment extends Fragment {
         //sharingIntent.putExtra(Intent.EXTRA_STREAM, newsMetaInfo.getNewsImageLocalPath());
 
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shortUrl
-                + "\n\nRead Full Story");
-        startActivity(Intent.createChooser(sharingIntent, "Share Story via"));
+                + "\n\nRead Personality development Tips");
+        startActivity(Intent.createChooser(sharingIntent, "Share Personality Development Tips via"));
         hideDialog();
 
     }

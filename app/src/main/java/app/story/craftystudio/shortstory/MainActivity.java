@@ -98,11 +98,11 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.splash_main);
 
-        try{
-            RandomSplashQuotes randomSplashQuotes =new RandomSplashQuotes();
-            TextView textView =(TextView)findViewById(R.id.splash_quote_textView);
+        try {
+            RandomSplashQuotes randomSplashQuotes = new RandomSplashQuotes();
+            TextView textView = (TextView) findViewById(R.id.splash_quote_textView);
             textView.setText(randomSplashQuotes.randomQuote());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -298,8 +298,8 @@ public class MainActivity extends AppCompatActivity
             //sharingIntent.putExtra(Intent.EXTRA_STREAM, newsMetaInfo.getNewsImageLocalPath());
 
             sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-                    "\n\n Read Short Inspirational Stories Daily \n Download it now \n ");
-            startActivity(Intent.createChooser(sharingIntent, "Share Story App via"));
+                    "https://play.google.com/store/apps/details?id=app.story.craftystudio.shortstory \n\n Read Daily Personality Development Tips \n Download it now \n ");
+            startActivity(Intent.createChooser(sharingIntent, "Share Make Me App Better App via"));
 
         } else if (id == R.id.nav_quotes) {
             Intent intent = new Intent(MainActivity.this, Main2ActivityQuotes.class);
@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity
 
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"acraftystudio@gmail.com"});
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Suggestion From Short Story User");
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Suggestion For Make me Better App ");
         emailIntent.setType("text/plain");
 
         startActivity(Intent.createChooser(emailIntent, "Send mail From..."));
@@ -325,7 +325,7 @@ public class MainActivity extends AppCompatActivity
 
     private void rateUs() {
 
-        MainActivity.this.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.craftystudio.vocabulary.dailyeditorial&hl=en")));
+        MainActivity.this.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.story.craftystudio.shortstory")));
 
     }
 
