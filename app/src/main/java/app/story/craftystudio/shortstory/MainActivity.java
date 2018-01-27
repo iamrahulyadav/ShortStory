@@ -18,6 +18,9 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +40,9 @@ import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
+import com.facebook.ads.NativeAd;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -60,7 +66,9 @@ import java.util.List;
 import utils.AppRater;
 import utils.FireBaseHandler;
 import utils.RandomSplashQuotes;
+import utils.SettingManager;
 import utils.Story;
+import utils.StoryAdapter;
 import utils.ZoomOutPageTransformer;
 
 import static android.R.id.message;
@@ -87,9 +95,18 @@ public class MainActivity extends AppCompatActivity
 
     WelcomeHelper welcomeScreen;
 
+    private RecyclerView recyclerView;
+    private StoryAdapter storyAdapter;
+    private boolean isLoading = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (SettingManager.getThemeMode(this) == 1) {
+            setTheme(R.style.ActivityTheme_Primary_Base_Dark);
+        }
+
         Fabric.with(this, new Crashlytics());
 
         //tutorial display
@@ -110,6 +127,8 @@ public class MainActivity extends AppCompatActivity
 
         fireBaseHandler = new FireBaseHandler();
         openDynamicLink();
+
+
     }
 
     public void initializeActivity() {
@@ -150,6 +169,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void openDynamicLink() {
+        downloadStoryList();
+
         FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(getIntent())
                 .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
@@ -194,7 +215,7 @@ public class MainActivity extends AppCompatActivity
                                 Intent intent = getIntent();
                                 String storyID = intent.getStringExtra("storyID");
                                 if (storyID == null) {
-                                    downloadStoryList();
+
                                 } else {
                                     //download story
                                     downloadStory(storyID);
@@ -206,7 +227,7 @@ public class MainActivity extends AppCompatActivity
                                     //   Toast.makeText(this, "Story id is = "+storyID, Toast.LENGTH_SHORT).show();
                                 }
                             } catch (Exception e) {
-                                downloadStoryList();
+
                                 e.printStackTrace();
                             }
 
@@ -226,7 +247,6 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onFailure(@NonNull Exception e) {
 
-                        downloadStoryList();
                         Log.w("DeepLink", "getDynamicLink:onFailure", e);
                     }
                 });
@@ -236,6 +256,70 @@ public class MainActivity extends AppCompatActivity
         downloadStoryList();
         Intent intent = new Intent(MainActivity.this, Main2ActivityQuotes.class);
         startActivity(intent);
+    }
+
+    private void initializeRecyclerView() {
+
+        recyclerView = (RecyclerView) findViewById(R.id.mainActivity_recyclerView);
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+
+        storyAdapter = new StoryAdapter(mStoryList, this);
+
+        storyAdapter.setClickListener(new StoryAdapter.ClickListener() {
+
+            @Override
+            public void onItemClick(View view, int position) {
+                onItemClicked(position);
+            }
+        });
+
+
+        recyclerView.setAdapter(storyAdapter);
+
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (!recyclerView.canScrollVertically(1)) {
+
+                    if (!isLoading) {
+                        downloadMoreStoryList();
+                        Toast.makeText(MainActivity.this, "Loading", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            }
+        });
+
+    }
+
+    private void onItemClicked(int position) {
+
+        if (mStoryList.get(position).getObjectType() == 1) {
+            return;
+        }
+
+        Intent intent = new Intent(MainActivity.this, StoryFeedActivity.class);
+        intent.putExtra("story", mStoryList.get(position));
+        startActivity(intent);
+
+
+    }
+
+    private void onItemClicked(Story story) {
+
+
+        Intent intent = new Intent(MainActivity.this, StoryFeedActivity.class);
+        intent.putExtra("story", story);
+        startActivity(intent);
+
+
     }
 
 
@@ -306,10 +390,26 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_tutlorial) {
             welcomeScreen.forceShow();
+        } else if (id == R.id.nav_theme_night) {
+            onNightClick();
+        } else if (id == R.id.nav_theme_day) {
+            onDayClick();
         }
+
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void onDayClick() {
+        SettingManager.setThemeMode(MainActivity.this, 0);
+        recreate();
+    }
+
+    private void onNightClick() {
+        SettingManager.setThemeMode(MainActivity.this, 1);
+        recreate();
     }
 
     private void giveSuggestion() {
@@ -340,12 +440,11 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 if (isSuccessful) {
-                    mStoryList.add(story);
-                    mPagerAdapter.notifyDataSetChanged();
+                    onItemClicked(story);
                 } else {
                     openConnectionFailureDialog();
                 }
-                downloadStoryList();
+                //downloadStoryList();
             }
 
             @Override
@@ -361,7 +460,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void downloadStoryList() {
-        fireBaseHandler.downloadStoryList(5, new FireBaseHandler.OnStorylistener() {
+        isLoading = true;
+
+        fireBaseHandler.downloadStoryList(10, new FireBaseHandler.OnStorylistener() {
             @Override
             public void onStoryDownLoad(Story story, boolean isSuccessful) {
 
@@ -382,6 +483,10 @@ public class MainActivity extends AppCompatActivity
 
                     initializeNativeAds();
                     mPagerAdapter.notifyDataSetChanged();
+
+                    initializeRecyclerView();
+
+                    isLoading = false;
 
                 } else {
                     openConnectionFailureDialog();
@@ -418,6 +523,8 @@ public class MainActivity extends AppCompatActivity
 
 
     public void downloadMoreStoryList() {
+        isLoading = true;
+
         fireBaseHandler.downloadStoryList(5, mStoryList.get(mStoryList.size() - 1).getStoryID(), new FireBaseHandler.OnStorylistener() {
             @Override
             public void onStoryDownLoad(Story story, boolean isSuccessful) {
@@ -435,6 +542,9 @@ public class MainActivity extends AppCompatActivity
 
                     initializeNativeAds();
                     mPagerAdapter.notifyDataSetChanged();
+                    storyAdapter.notifyDataSetChanged();
+
+                    isLoading = false;
 
                 } else {
                     openConnectionFailureDialog();
@@ -544,7 +654,7 @@ public class MainActivity extends AppCompatActivity
         DisplayMetrics displayMetrics = MainActivity.this.getResources().getDisplayMetrics();
         int dpHeight = (int) (displayMetrics.heightPixels / displayMetrics.density);
         int dpWidth = (int) (displayMetrics.widthPixels / displayMetrics.density);
-
+/*
         for (Story story : mStoryList) {
 
             if (story.getNativeExpressAdView() == null) {
@@ -577,44 +687,57 @@ public class MainActivity extends AppCompatActivity
 
             }
 
-        }
+        }*/
 
 
-        for (int i = 0; i < mStoryList.size(); i++) {
-
-            if (i % 3 == 2) {
-
-                if (mStoryList.get(i).getObjectType() != 1) {
+/*        for (int i = 2; i < mStoryList.size(); i = i + 5) {
 
 
-                    Story nativeAdsStory = new Story();
-                    nativeAdsStory.setObjectType(1);
-                    NativeExpressAdView adView = new NativeExpressAdView(this);
+            if (mStoryList.get(i).getObjectType() != 1) {
 
-                    adView.setAdUnitId("ca-app-pub-8455191357100024/7223557860");
-                    adView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
-                    adView.setAdSize(new AdSize(dpWidth - 24, 4 * (dpHeight / 5)));
-                    adView.loadAd(new AdRequest.Builder().build());
-                    adView.setAdListener(new AdListener() {
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            super.onAdFailedToLoad(i);
-                            try {
-                                Answers.getInstance().logCustom(new CustomEvent("Ad failed to load").putCustomAttribute("placement", "top").putCustomAttribute("error code", i));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                Story nativeAdsStory = new Story();
+                nativeAdsStory.setObjectType(1);
+                NativeAd nativeAd = new NativeAd(this, "1963281763960722_2012202609068637");
+                nativeAd.setAdListener(new com.facebook.ads.AdListener() {
+
+                    @Override
+                    public void onError(Ad ad, AdError error) {
+                        // Ad error callback
+                        try {
+                            Answers.getInstance().logCustom(new CustomEvent("Ad failed to load")
+                                    .putCustomAttribute("Placement", "List native").putCustomAttribute("errorType", error.getErrorMessage()).putCustomAttribute("Source", "Facebook"));
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    });
-                    nativeAdsStory.setNativeExpressAdView(adView);
+                    }
 
-                    mStoryList.add(i, nativeAdsStory);
-                }
+                    @Override
+                    public void onAdLoaded(Ad ad) {
+                        // Ad loaded callback
+                        newsAdapter.notifyDataSetChanged();
+                    }
 
+                    @Override
+                    public void onAdClicked(Ad ad) {
+                        // Ad clicked callback
+                    }
+
+                    @Override
+                    public void onLoggingImpression(Ad ad) {
+                        // Ad impression logged callback
+                    }
+                });
+                nativeAd.loadAd();
+
+
+                nativeAdsStory.setNativeAd(nativeAd);
+
+                mStoryList.add(i, nativeAdsStory);
             }
 
-        }
+
+        }*/
 
 
     }

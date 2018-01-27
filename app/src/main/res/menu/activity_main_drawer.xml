@@ -13,11 +13,17 @@
                     android:icon="@drawable/ic_action_quotes"
                     android:title="Famous Quotes" />
 
-                <item
-                    android:id="@+id/nav_tutlorial"
-                    android:icon="@drawable/ic_action_tutorial"
-                    android:title="Guide Tutorial" />
+            </menu>
+        </item>
 
+        <item android:title="Theme">
+            <menu>
+                <item
+                    android:id="@+id/nav_theme_night"
+                    android:title="Night Mode" />
+                <item
+                    android:id="@+id/nav_theme_day"
+                    android:title="Day" />
             </menu>
         </item>
 
@@ -25,6 +31,12 @@
             android:title="Communication"
             android:titleCondensed="true">
             <menu>
+
+
+                <item
+                    android:id="@+id/nav_tutlorial"
+                    android:icon="@drawable/ic_action_tutorial"
+                    android:title="Guide Tutorial" />
 
                 <item
                     android:id="@+id/nav_suggestion"

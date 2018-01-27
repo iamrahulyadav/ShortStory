@@ -11,11 +11,63 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+
+
+    <!-- Light base activity theme -->
+    <style name="ActivityTheme.Primary.Base.Light" parent="AppTheme.NoActionBar">
+
+
+        <item name="colorAccent">#2f65d2</item>
+        <item name="primaryTextColor">#2e2e2e</item>
+        <item name="secondaryTextColor">#bb262626</item>
+        <item name="backgroundCardColor">#FFFF</item>
+        <item name="dividerColor">#F2F2F3</item>
+        <item name="backgroundColor">#e5e5e6</item>
+
+        <item name="primaryTextAccentColor">#fdfafafa</item>
+        <item name="secondaryTextAccentColor">#e7e7e7</item>
+        <item name="readMaskColor">#64ffffff</item>
+
+    </style>
+
+
+    <!-- Dark base activity theme -->
+    <style name="ActivityTheme.Primary.Base.Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="primaryTextColor">#F4F4F6</item>
+        <item name="secondaryTextColor">#96F4F4F6</item>
+        <item name="backgroundCardColor">#28292e</item>
+        <item name="dividerColor">#F2F2F3</item>
+        <item name="backgroundColor">#33343B</item>
+
+        <item name="primaryTextAccentColor">#F4F4F6</item>
+        <item name="secondaryTextAccentColor">#96F4F4F6</item>
+        <item name="readMaskColor">#6e000000</item>
+    </style>
+
+
+    <style name="ActivityThemeDark" parent="ActivityTheme.Primary.Base.Dark">
+
+    </style>
+
+    <style name="ActivityThemeLight" parent="ActivityTheme.Primary.Base.Light">
+
+    </style>
+
+
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ActivityThemeLight.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="ActivityThemeLight.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 
 
 </resources>

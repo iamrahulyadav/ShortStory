@@ -9,11 +9,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/ActivityThemeLight">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/ActivityThemeLight"            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,10 +34,16 @@
         <activity
             android:name=".Main2ActivityQuotes"
             android:label="@string/title_activity_main2_quotes"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/ActivityThemeLight" />
+        <activity
+            android:name=".MyWelcomeActivity"
+            android:theme="@style/WelcomeScreenTheme" />
+        <activity
+            android:name=".StoryFeedActivity"
+            android:label="@string/title_activity_story_feed"
+            android:theme="@style/ActivityThemeLight">
 
-        <activity android:name=".MyWelcomeActivity"
-            android:theme="@style/WelcomeScreenTheme"/>
+        </activity>
     </application>
 
 </manifest>

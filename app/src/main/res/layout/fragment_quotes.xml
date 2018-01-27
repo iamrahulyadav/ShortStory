@@ -19,7 +19,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="20dp"
-            app:cardBackgroundColor="@color/colorWhiteBg"
+            app:cardBackgroundColor="?attr/backgroundCardColor"
             app:cardCornerRadius="2dp"
             app:cardElevation="4dp">
 
@@ -49,7 +49,7 @@
                     android:lineSpacingMultiplier="1.3"
                     android:text="Parents aren’t the people you come from. They’re the people you want to be, when you grow up."
                     android:textAlignment="center"
-                    android:textColor="@color/colorBlackText"
+                    android:textColor="?attr/primaryTextColor"
                     android:textIsSelectable="true"
                     android:textSize="16dp"
                     android:textStyle="normal" />
@@ -64,8 +64,8 @@
                     android:layout_marginTop="2dp"
                     android:fontFamily="serif"
                     android:text="authorname"
+                    android:textColor="?attr/secondaryTextColor"
                     android:textAlignment="textEnd"
-                    android:textColor="@color/colorBlueTitle"
                     android:textSize="16sp"
                     android:textStyle="normal" />
 

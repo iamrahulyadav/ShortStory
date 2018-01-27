@@ -24,6 +24,7 @@ import java.util.ArrayList;
 
 import utils.FireBaseHandler;
 import utils.Quotes;
+import utils.SettingManager;
 import utils.Story;
 
 public class Main2ActivityQuotes extends AppCompatActivity {
@@ -39,6 +40,11 @@ public class Main2ActivityQuotes extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (SettingManager.getThemeMode(this) == 1) {
+            setTheme(R.style.ActivityTheme_Primary_Base_Dark);
+        }
+
         setContentView(R.layout.activity_main2_quotes);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -67,7 +73,7 @@ public class Main2ActivityQuotes extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
-        mAdView.setAdListener(new AdListener(){
+        mAdView.setAdListener(new AdListener() {
             @Override
             public void onAdFailedToLoad(int i) {
                 super.onAdFailedToLoad(i);
@@ -166,7 +172,7 @@ public class Main2ActivityQuotes extends AppCompatActivity {
                     mPagerAdapter.notifyDataSetChanged();
 
                 } else {
-                  //  openConnectionFailureDialog();
+                    //  openConnectionFailureDialog();
                 }
             }
 
