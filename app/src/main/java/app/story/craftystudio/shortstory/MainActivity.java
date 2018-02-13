@@ -40,6 +40,7 @@ import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.facebook.ads.AbstractAdListener;
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdError;
 import com.facebook.ads.NativeAd;
@@ -86,6 +87,8 @@ public class MainActivity extends AppCompatActivity
 
     int adsCount = 0;
     static private InterstitialAd mInterstitialAd;
+
+    com.facebook.ads.InterstitialAd facebookInterstitial;
 
     private boolean pendingInterstitialAd;
     private Handler handler;
@@ -152,7 +155,7 @@ public class MainActivity extends AppCompatActivity
         mPager = (ViewPager) findViewById(R.id.mainActivity_viewpager);
 
 
-        initializeViewPager();
+        //initializeViewPager();
 
 
         //calling rate now dialog
@@ -290,7 +293,7 @@ public class MainActivity extends AppCompatActivity
 
                     if (!isLoading) {
                         downloadMoreStoryList();
-                        Toast.makeText(MainActivity.this, "Loading", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, "Loading", Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -308,6 +311,8 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this, StoryFeedActivity.class);
         intent.putExtra("story", mStoryList.get(position));
         startActivity(intent);
+
+        checkInterstitialAds();
 
 
     }
@@ -353,8 +358,10 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_quote) {
 
+            Intent intent = new Intent(MainActivity.this,Main2ActivityQuotes.class);
+            startActivity(intent);
 
             return true;
         }
@@ -482,7 +489,7 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     initializeNativeAds();
-                    mPagerAdapter.notifyDataSetChanged();
+                    //mPagerAdapter.notifyDataSetChanged();
 
                     initializeRecyclerView();
 
@@ -541,7 +548,7 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     initializeNativeAds();
-                    mPagerAdapter.notifyDataSetChanged();
+                   // mPagerAdapter.notifyDataSetChanged();
                     storyAdapter.notifyDataSetChanged();
 
                     isLoading = false;
@@ -651,46 +658,10 @@ public class MainActivity extends AppCompatActivity
 
     public void initializeNativeAds() {
 
-        DisplayMetrics displayMetrics = MainActivity.this.getResources().getDisplayMetrics();
-        int dpHeight = (int) (displayMetrics.heightPixels / displayMetrics.density);
-        int dpWidth = (int) (displayMetrics.widthPixels / displayMetrics.density);
+
 /*
-        for (Story story : mStoryList) {
 
-            if (story.getNativeExpressAdView() == null) {
-
-                NativeExpressAdView adView = new NativeExpressAdView(this);
-
-                adView.setAdUnitId("ca-app-pub-8455191357100024/7311187776");
-                adView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-
-                adView.setAdSize(new AdSize(dpWidth - 64, 180));
-                adView.loadAd(new AdRequest.Builder().build());
-                adView.setAdListener(new AdListener() {
-                    @Override
-                    public void onAdFailedToLoad(int i) {
-                        super.onAdFailedToLoad(i);
-                        try {
-                            Answers.getInstance().logCustom(new CustomEvent("Ad failed to load").putCustomAttribute("placement", "bottom").putCustomAttribute("error code", i));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onAdLoaded() {
-                        super.onAdLoaded();
-                        Log.d("native ads", "onAdFailedToLoad: ");
-                    }
-                });
-                story.setNativeExpressAdView(adView);
-
-            }
-
-        }*/
-
-
-/*        for (int i = 2; i < mStoryList.size(); i = i + 5) {
+        for (int i = 2; i < mStoryList.size(); i = i + 3) {
 
 
             if (mStoryList.get(i).getObjectType() != 1) {
@@ -715,7 +686,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onAdLoaded(Ad ad) {
                         // Ad loaded callback
-                        newsAdapter.notifyDataSetChanged();
+                        storyAdapter.notifyDataSetChanged();
                     }
 
                     @Override
@@ -737,62 +708,29 @@ public class MainActivity extends AppCompatActivity
             }
 
 
-        }*/
+        }
+*/
 
 
     }
 
     public void initializeInterstitialAds() {
+        facebookInterstitial = new com.facebook.ads.InterstitialAd(this, "135472490423979_169000983737796");
 
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-8455191357100024/8750307275");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-
-        //interstitialAdTimer(45000);
-
-
-        mInterstitialAd.setAdListener(new AdListener() {
-
+        facebookInterstitial.setAdListener(new AbstractAdListener() {
             @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-                Log.i("Ads", "onAdLoaded");
+            public void onAdLoaded(Ad ad) {
+                super.onAdLoaded(ad);
             }
 
             @Override
-            public void onAdFailedToLoad(int errorCode) {
-                // Code to be executed when an ad request fails.
-                Log.i("Ads", "onAdFailedToLoad");
-
-                Answers.getInstance().logCustom(new CustomEvent("Ad failed to load").putCustomAttribute("Failed index", errorCode));
-
+            public void onInterstitialDismissed(Ad ad) {
+                super.onInterstitialDismissed(ad);
+                facebookInterstitial.loadAd();
             }
-
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when the ad is displayed.
-                Log.i("Ads", "onAdOpened");
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-                Log.i("Ads", "onAdLeftApplication");
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when when the interstitial ad is closed.
-                Log.i("Ads", "onAdClosed");
-                //adsCount = 0;
-                //interstitialAdTimer(45000);
-
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-
-            }
-
-
         });
+
+        facebookInterstitial.loadAd();
 
     }
 
@@ -817,13 +755,17 @@ public class MainActivity extends AppCompatActivity
 
     private void checkInterstitialAds() {
 
-        if (adsCount > 2 && pendingInterstitialAd) {
-            if (mInterstitialAd.isLoaded()) {
-                //  mInterstitialAd.show();
-            } else {
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        if (adsCount > 2 ) {
 
+            if (facebookInterstitial!=null){
+                if (facebookInterstitial.isAdLoaded()){
+                    facebookInterstitial.show();
+                }
             }
+            adsCount=0;
+
+        }else {
+            adsCount++;
         }
     }
 

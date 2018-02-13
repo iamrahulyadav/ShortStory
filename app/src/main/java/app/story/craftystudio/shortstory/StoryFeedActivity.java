@@ -2,6 +2,7 @@ package app.story.craftystudio.shortstory;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
@@ -25,6 +27,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.answers.RatingEvent;
+import com.facebook.ads.Ad;
+import com.facebook.ads.AdError;
+import com.facebook.ads.AdListener;
+import com.facebook.ads.NativeAd;
+import com.facebook.ads.NativeAdView;
+import com.facebook.ads.NativeAdViewAttributes;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -132,6 +140,119 @@ public class StoryFeedActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+
+
+        initializeTopNative();
+        initializeBottomNativeAds();
+
+
+    }
+
+    public void initializeBottomNativeAds() {
+
+
+
+
+
+            final NativeAd nativeAd = new NativeAd(this, "135472490423979_168999963737898");
+            nativeAd.setAdListener(new AdListener() {
+                @Override
+                public void onError(Ad ad, AdError adError) {
+
+                    try {
+                        Answers.getInstance().logCustom(new CustomEvent("Ad failed").putCustomAttribute("Placement", "storyfeed").putCustomAttribute("error", adError.getErrorMessage()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+
+                @Override
+                public void onAdLoaded(Ad ad) {
+
+                    NativeAdViewAttributes viewAttributes = new NativeAdViewAttributes()
+                            .setBackgroundColor(Color.LTGRAY)
+                            .setButtonBorderColor(getResources().getColor(R.color.colorPrimary))
+                            .setButtonColor(getResources().getColor(R.color.colorPrimary))
+                            .setButtonTextColor(Color.WHITE);
+
+
+                    View adView = NativeAdView.render(StoryFeedActivity.this, nativeAd, NativeAdView.Type.HEIGHT_400, viewAttributes);
+                    CardView nativeAdContainer = (CardView) findViewById(R.id.storyFeedActivity_adView_linearLayout);
+                    // Add the Native Ad View to your ad container
+                    nativeAdContainer.removeAllViews();
+                    nativeAdContainer.addView(adView);
+                }
+
+                @Override
+                public void onAdClicked(Ad ad) {
+
+                }
+
+                @Override
+                public void onLoggingImpression(Ad ad) {
+
+                }
+            });
+
+            // Initiate a request to load an ad.
+            nativeAd.loadAd();
+
+    }
+
+
+    private void initializeTopNative() {
+
+
+
+        final NativeAd nativeAd = new NativeAd(this, "135472490423979_168999963737898");
+        nativeAd.setAdListener(new AdListener() {
+            @Override
+            public void onError(Ad ad, AdError adError) {
+
+                try {
+                    Answers.getInstance().logCustom(new CustomEvent("Ad failed").putCustomAttribute("Placement", "storyfeed").putCustomAttribute("error", adError.getErrorMessage()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+            @Override
+            public void onAdLoaded(Ad ad) {
+
+                NativeAdViewAttributes viewAttributes = new NativeAdViewAttributes()
+                        .setBackgroundColor(Color.LTGRAY)
+                        .setButtonBorderColor(getResources().getColor(R.color.colorPrimary))
+                        .setButtonColor(getResources().getColor(R.color.colorPrimary))
+                        .setButtonTextColor(Color.WHITE);
+
+
+                View adView = NativeAdView.render(StoryFeedActivity.this, nativeAd, NativeAdView.Type.HEIGHT_120, viewAttributes);
+                CardView nativeAdContainer = (CardView) findViewById(R.id.storyFeedActivity_adViewTop_linearLayout);
+                // Add the Native Ad View to your ad container
+                nativeAdContainer.removeAllViews();
+                nativeAdContainer.addView(adView);
+            }
+
+            @Override
+            public void onAdClicked(Ad ad) {
+
+            }
+
+            @Override
+            public void onLoggingImpression(Ad ad) {
+
+            }
+        });
+
+        // Initiate a request to load an ad.
+        nativeAd.loadAd();
+
 
     }
 

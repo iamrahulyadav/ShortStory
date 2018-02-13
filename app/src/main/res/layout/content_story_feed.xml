@@ -14,111 +14,123 @@
         android:layout_height="match_parent">
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/storyFeedActivity_title_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="serif"
+                android:text="Title"
+                android:textAlignment="center"
+                android:textColor="?attr/primaryTextColor"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/storyFeedActivity_image_imageview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_margin="4dp"
+                android:scaleType="fitXY" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="16dp"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/storyFeedActivity_title_textView"
-                    android:layout_width="match_parent"
+                    android:id="@+id/storyFeedActivity_authorName_textView"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="0dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="serif"
-                    android:text="Title"
-                    android:textColor="?attr/primaryTextColor"
-                    android:textAlignment="center"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:id="@+id/storyFeedActivity_image_imageview"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:layout_margin="4dp"
-                    android:scaleType="fitXY" />
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="4dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/storyFeedActivity_authorName_textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Author Name"
-                        android:textAlignment="textStart"
-                        android:textColor="?attr/secondaryTextColor"
-                        android:textSize="14sp"
-                        android:textStyle="italic" />
-
-
-                    <TextView
-                        android:id="@+id/storyFeedActivity_tag_textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Tag"
-                        android:textColor="?attr/secondaryTextColor"
-
-                        android:textAlignment="center"
-                        android:textSize="14sp"
-                        android:visibility="gone"
-
-                        />
-
-
-                    <TextView
-                        android:id="@+id/storyFeedActivity_genre_textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Genre"
-                        android:textColor="?attr/secondaryTextColor"
-
-                        android:textAlignment="textEnd"
-                        android:textSize="14sp"
-                        android:textStyle="italic"
-
-                        />
-
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/storyFeedActivity_description_textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="4dp"
                     android:layout_weight="1"
-                    android:fontFamily="serif"
-                    android:lineSpacingMultiplier="1.3"
-                    android:text="Description"
-                    android:textAlignment="viewStart"
-                    android:textColor="?attr/primaryTextColor"
-                    android:textSize="16sp"
-                    android:textStyle="normal" />
+                    android:text="Author Name"
+                    android:textAlignment="textStart"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="14sp"
+                    android:textStyle="italic" />
 
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/storyFeedActivity_tag_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Tag"
+                    android:textAlignment="center"
+
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+
+                    />
+
+
+                <TextView
+                    android:id="@+id/storyFeedActivity_genre_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Genre"
+                    android:textAlignment="textEnd"
+
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+
+                    />
+
+
+            </LinearLayout>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:id="@+id/storyFeedActivity_adViewTop_linearLayout"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="4dp"
+                >
+
+            </android.support.v7.widget.CardView>
+
+            <TextView
+                android:id="@+id/storyFeedActivity_description_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="1"
+                android:fontFamily="serif"
+                android:lineSpacingMultiplier="1.3"
+                android:text="Description"
+                android:textAlignment="viewStart"
+                android:textColor="?attr/primaryTextColor"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <com.sackcentury.shinebuttonlib.ShineButton
                     android:id="@+id/like_shine_button"
@@ -144,77 +156,81 @@
                     android:id="@+id/fragmentShortStory_storyLikes_Textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_weight="1"
                     android:text=" 2 Likes"
-                    android:layout_gravity="center"
                     android:textColor="?attr/secondaryTextColor"
                     android:textSize="15sp" />
 
-                </LinearLayout>
+            </LinearLayout>
 
-                <!-- Book name and link and date-->
-                <LinearLayout
-                    android:layout_width="match_parent"
+            <!-- Book name and link and date-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/storyFeedActivity_bookName_textView"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="20dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/storyFeedActivity_bookName_textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="2dp"
-                        android:layout_weight="1"
-                        android:text="BookName"
-                        android:textColor="?attr/secondaryTextColor"
-
-                        android:textSize="14sp" />
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:text="BookName"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
 
 
-                    <TextView
-                        android:id="@+id/storyFeedActivity_bookLink_textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="2dp"
-                        android:autoLink="all|web"
-                        android:text="Book Link"
-                        android:textSize="14sp"
-                        android:textColor="?attr/secondaryTextColor"
+                <TextView
+                    android:id="@+id/storyFeedActivity_bookLink_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:autoLink="all|web"
+                    android:text="Book Link"
+                    android:visibility="gone"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="14sp"
 
-                        />
-
-
-                    <TextView
-                        android:id="@+id/storyFeedActivity_storyDate_textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="2dp"
-                        android:layout_weight="1"
-                        android:text="Date"
-                        android:textSize="14sp"
-                        android:textColor="?attr/secondaryTextColor"
-
-                        />
+                    />
 
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:orientation="vertical"
-                        android:id="@+id/storyFeedActivity_adView_linearLayout"
-                        android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/storyFeedActivity_storyDate_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:layout_weight="1"
+                    android:text="Date"
+                    android:textColor="?attr/secondaryTextColor"
+                    android:textSize="14sp"
 
-                    </LinearLayout>
+                    />
 
 
 
-
-                </LinearLayout>
 
 
             </LinearLayout>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/storyFeedActivity_adView_linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="4dp"
+                android:orientation="vertical">
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
 

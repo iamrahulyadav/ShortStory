@@ -23,7 +23,7 @@
                     android:title="Night Mode" />
                 <item
                     android:id="@+id/nav_theme_day"
-                    android:title="Day" />
+                    android:title="Day Mode" />
             </menu>
         </item>
 

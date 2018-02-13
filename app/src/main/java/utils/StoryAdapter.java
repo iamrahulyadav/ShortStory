@@ -1,6 +1,7 @@
 package utils;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.media.Image;
 import android.os.Build;
 import android.support.v7.widget.CardView;
@@ -10,10 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.facebook.ads.NativeAdView;
+import com.facebook.ads.NativeAdViewAttributes;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -36,11 +40,12 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int AD_VIEW_TYPE = 2;
 
     ClickListener clickListener;
-    private int TYPE_NATIVE_AD=1;
+    private int TYPE_NATIVE_AD = 1;
 
     public class StoryViewHolder extends RecyclerView.ViewHolder {
         public TextView title, dateTextView;
         View containerView;
+        LinearLayout adViewContainer;
         ImageView imageView;
 
         public StoryViewHolder(final View view) {
@@ -63,6 +68,9 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }
             });
 
+            adViewContainer= (LinearLayout) view.findViewById(R.id.storyAdapter_adView_container);
+
+
         }
     }
 
@@ -75,8 +83,8 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
 
-           /* case AD_VIEW_TYPE:
-                View nativeExpressLayoutView = LayoutInflater.from(parent.getContext())
+            case AD_VIEW_TYPE:
+               /* View nativeExpressLayoutView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.native_express_ad_container, parent, false);
                 return new NativeExpressAdViewHolder(nativeExpressLayoutView);
 */
@@ -99,12 +107,27 @@ public class StoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         Story story = (Story) storyArrayList.get(position);
 
 
-        if (story.getObjectType()==TYPE_NATIVE_AD){
+        if (story.getObjectType() == TYPE_NATIVE_AD) {
 
+            /*storyViewHolder.adViewContainer.setVisibility(View.VISIBLE);
             storyViewHolder.containerView.setVisibility(View.GONE);
 
-        }else {
+            NativeAdViewAttributes viewAttributes = new NativeAdViewAttributes()
+                    .setBackgroundColor(Color.LTGRAY)
+                    .setButtonTextColor(Color.WHITE);
+
+
+            View adView = NativeAdView.render(context, story.getNativeAd(), NativeAdView.Type.HEIGHT_400, viewAttributes);
+
+            storyViewHolder.adViewContainer.removeAllViews();
+            storyViewHolder.adViewContainer.addView(adView);*/
+
+
+        } else {
+            storyViewHolder.adViewContainer.removeAllViews();
+
             storyViewHolder.containerView.setVisibility(View.VISIBLE);
+            storyViewHolder.adViewContainer.setVisibility(View.GONE);
 
             storyViewHolder.title.setText(story.getStoryTitle());
 

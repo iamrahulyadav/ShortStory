@@ -26,7 +26,7 @@ public class Story implements Serializable {
     private int storyLikes , objectType;
     boolean pushNotification;
 
-    transient NativeExpressAdView nativeAd;
+    transient NativeAd nativeAd;
 
     public String getStoryImageAddress() {
         return storyImageAddress;
@@ -128,11 +128,11 @@ public class Story implements Serializable {
         this.storyDate = storyDate;
     }
 
-    public NativeExpressAdView getNativeAd() {
+    public NativeAd getNativeAd() {
         return nativeAd;
     }
 
-    public void setNativeAd(NativeExpressAdView nativeAd) {
+    public void setNativeAd(NativeAd nativeAd) {
         this.nativeAd = nativeAd;
     }
 

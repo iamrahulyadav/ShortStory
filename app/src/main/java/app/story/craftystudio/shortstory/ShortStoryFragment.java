@@ -157,10 +157,10 @@ public class ShortStoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         if (story.getObjectType() == 1) {
-            View view = inflater.inflate(R.layout.nativead_card_layout, container, false);
-            LinearLayout linearLayout = (LinearLayout)view.findViewById(R.id.nativead_container_linearLayout);
+            /*View view = inflater.inflate(R.layout.nativead_card_layout, container, false);
+            LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.nativead_container_linearLayout);
 
-            NativeExpressAdView nativeExpressAdView= story.getNativeExpressAdView();
+            NativeExpressAdView nativeExpressAdView = story.getNativeAd();
 
             if (nativeExpressAdView.getParent() != null) {
                 ((ViewGroup) nativeExpressAdView.getParent()).removeView(nativeExpressAdView);
@@ -168,9 +168,9 @@ public class ShortStoryFragment extends Fragment {
 
 
             linearLayout.removeAllViews();
-            linearLayout.addView(nativeExpressAdView);
+            linearLayout.addView(nativeExpressAdView);*/
 
-            return view;
+            //return view;
         }
 
         View view = inflater.inflate(R.layout.fragment_short_story, container, false);
@@ -456,7 +456,7 @@ public class ShortStoryFragment extends Fragment {
         behavior = BottomSheetBehavior.from(bottomSheet);
 
 
-        NativeExpressAdView nativeExpressAdView =story.getNativeExpressAdView();
+      /*  NativeExpressAdView nativeExpressAdView =story.getNativeAd();
         if (nativeExpressAdView != null) {
             LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.fragmentShortStory_adView_linearLayout);
             linearLayout.removeAllViews();
@@ -466,7 +466,7 @@ public class ShortStoryFragment extends Fragment {
             }
 
             linearLayout.addView(nativeExpressAdView);
-        }
+        }*/
 
         Button button =(Button) view.findViewById(R.id.fragmentShortStory_recommendedapp_button);
         button.setOnClickListener(new View.OnClickListener() {
