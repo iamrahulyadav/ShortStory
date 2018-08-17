@@ -553,6 +553,7 @@ public class MainActivity extends AppCompatActivity
 
                     isLoading = false;
 
+
                 } else {
                     openConnectionFailureDialog();
                 }
