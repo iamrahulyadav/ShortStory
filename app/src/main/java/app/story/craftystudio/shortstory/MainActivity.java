@@ -214,6 +214,7 @@ public class MainActivity extends AppCompatActivity
                             //download story list
 
 
+
                             try {
                                 Intent intent = getIntent();
                                 String storyID = intent.getStringExtra("storyID");
