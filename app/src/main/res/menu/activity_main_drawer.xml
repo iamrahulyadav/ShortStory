@@ -13,6 +13,10 @@
                     android:icon="@drawable/ic_action_quotes"
                     android:title="Famous Quotes" />
 
+                <item
+                    android:id="@+id/nav_bookmark"
+                    android:icon="@drawable/ic_action_bookmark"
+                    android:title="Bookmarks" />
             </menu>
         </item>
 

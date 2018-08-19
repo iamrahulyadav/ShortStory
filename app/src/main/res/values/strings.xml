@@ -8,4 +8,5 @@
     <string name="title_activity_main2_quotes">Inspiring Quotes</string>
     <string name="title_activity_story_list">StoryListActivity</string>
     <string name="title_activity_story_feed">Make Me Better</string>
+    <string name="title_activity_bookmark">Bookmarks</string>
 </resources>

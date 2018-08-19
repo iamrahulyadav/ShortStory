@@ -13,7 +13,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/ActivityThemeLight"            >
+            android:theme="@style/ActivityThemeLight">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,9 +41,11 @@
         <activity
             android:name=".StoryFeedActivity"
             android:label="@string/title_activity_story_feed"
-            android:theme="@style/ActivityThemeLight">
-
-        </activity>
+            android:theme="@style/ActivityThemeLight"></activity>
+        <activity
+            android:name=".BookmarkActivity"
+            android:label="@string/title_activity_bookmark"
+            android:theme="@style/ActivityThemeLight"></activity>
     </application>
 
 </manifest>

@@ -214,7 +214,6 @@ public class MainActivity extends AppCompatActivity
                             //download story list
 
 
-
                             try {
                                 Intent intent = getIntent();
                                 String storyID = intent.getStringExtra("storyID");
@@ -361,7 +360,7 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_quote) {
 
-            Intent intent = new Intent(MainActivity.this,Main2ActivityQuotes.class);
+            Intent intent = new Intent(MainActivity.this, Main2ActivityQuotes.class);
             startActivity(intent);
 
             return true;
@@ -402,6 +401,9 @@ public class MainActivity extends AppCompatActivity
             onNightClick();
         } else if (id == R.id.nav_theme_day) {
             onDayClick();
+        } else if (id == R.id.nav_bookmark) {
+            Intent intent = new Intent(MainActivity.this, BookmarkActivity.class);
+            startActivity(intent);
         }
 
 
@@ -549,7 +551,7 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     initializeNativeAds();
-                   // mPagerAdapter.notifyDataSetChanged();
+                    // mPagerAdapter.notifyDataSetChanged();
                     storyAdapter.notifyDataSetChanged();
 
                     isLoading = false;
@@ -757,16 +759,16 @@ public class MainActivity extends AppCompatActivity
 
     private void checkInterstitialAds() {
 
-        if (adsCount > 2 ) {
+        if (adsCount > 2) {
 
-            if (facebookInterstitial!=null){
-                if (facebookInterstitial.isAdLoaded()){
+            if (facebookInterstitial != null) {
+                if (facebookInterstitial.isAdLoaded()) {
                     facebookInterstitial.show();
                 }
             }
-            adsCount=0;
+            adsCount = 0;
 
-        }else {
+        } else {
             adsCount++;
         }
     }

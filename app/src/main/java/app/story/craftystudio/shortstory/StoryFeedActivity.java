@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -44,8 +45,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.sackcentury.shinebuttonlib.ShineButton;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
+import utils.DataBaseHelper;
 import utils.FireBaseHandler;
 import utils.SettingManager;
 import utils.Story;
@@ -90,8 +93,8 @@ public class StoryFeedActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+
             }
         });
 
@@ -121,7 +124,7 @@ public class StoryFeedActivity extends AppCompatActivity {
         storyLikesText = (TextView) findViewById(R.id.fragmentShortStory_storyLikes_Textview);
         storyLikesText.setText(story.getStoryLikes() + " likes");
         //like button
-        shineLikeButtonJava = (ShineButton)findViewById(R.id.like_shine_button);
+        shineLikeButtonJava = (ShineButton) findViewById(R.id.like_shine_button);
 
         shineLikeButtonJava.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
@@ -142,8 +145,6 @@ public class StoryFeedActivity extends AppCompatActivity {
         });
 
 
-
-
         initializeTopNative();
         initializeBottomNativeAds();
 
@@ -153,59 +154,55 @@ public class StoryFeedActivity extends AppCompatActivity {
     public void initializeBottomNativeAds() {
 
 
+        final NativeAd nativeAd = new NativeAd(this, "135472490423979_168999963737898");
+        nativeAd.setAdListener(new AdListener() {
+            @Override
+            public void onError(Ad ad, AdError adError) {
 
-
-
-            final NativeAd nativeAd = new NativeAd(this, "135472490423979_168999963737898");
-            nativeAd.setAdListener(new AdListener() {
-                @Override
-                public void onError(Ad ad, AdError adError) {
-
-                    try {
-                        Answers.getInstance().logCustom(new CustomEvent("Ad failed").putCustomAttribute("Placement", "storyfeed").putCustomAttribute("error", adError.getErrorMessage()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-
+                try {
+                    Answers.getInstance().logCustom(new CustomEvent("Ad failed").putCustomAttribute("Placement", "storyfeed").putCustomAttribute("error", adError.getErrorMessage()));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
-                @Override
-                public void onAdLoaded(Ad ad) {
 
-                    NativeAdViewAttributes viewAttributes = new NativeAdViewAttributes()
-                            .setBackgroundColor(Color.LTGRAY)
-                            .setButtonBorderColor(getResources().getColor(R.color.colorPrimary))
-                            .setButtonColor(getResources().getColor(R.color.colorPrimary))
-                            .setButtonTextColor(Color.WHITE);
+            }
+
+            @Override
+            public void onAdLoaded(Ad ad) {
+
+                NativeAdViewAttributes viewAttributes = new NativeAdViewAttributes()
+                        .setBackgroundColor(Color.LTGRAY)
+                        .setButtonBorderColor(getResources().getColor(R.color.colorPrimary))
+                        .setButtonColor(getResources().getColor(R.color.colorPrimary))
+                        .setButtonTextColor(Color.WHITE);
 
 
-                    View adView = NativeAdView.render(StoryFeedActivity.this, nativeAd, NativeAdView.Type.HEIGHT_400, viewAttributes);
-                    CardView nativeAdContainer = (CardView) findViewById(R.id.storyFeedActivity_adView_linearLayout);
-                    // Add the Native Ad View to your ad container
-                    nativeAdContainer.removeAllViews();
-                    nativeAdContainer.addView(adView);
-                }
+                View adView = NativeAdView.render(StoryFeedActivity.this, nativeAd, NativeAdView.Type.HEIGHT_400, viewAttributes);
+                CardView nativeAdContainer = (CardView) findViewById(R.id.storyFeedActivity_adView_linearLayout);
+                // Add the Native Ad View to your ad container
+                nativeAdContainer.removeAllViews();
+                nativeAdContainer.addView(adView);
+            }
 
-                @Override
-                public void onAdClicked(Ad ad) {
+            @Override
+            public void onAdClicked(Ad ad) {
 
-                }
+            }
 
-                @Override
-                public void onLoggingImpression(Ad ad) {
+            @Override
+            public void onLoggingImpression(Ad ad) {
 
-                }
-            });
+            }
+        });
 
-            // Initiate a request to load an ad.
-            nativeAd.loadAd();
+        // Initiate a request to load an ad.
+        nativeAd.loadAd();
 
     }
 
 
     private void initializeTopNative() {
-
 
 
         final NativeAd nativeAd = new NativeAd(this, "135472490423979_168999963737898");
@@ -348,6 +345,11 @@ public class StoryFeedActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.action_tts_reader) {
             speakOutFullStory();
+            return true;
+        } else if (id == R.id.action_bookmark) {
+            DataBaseHelper dataBaseHelper = new DataBaseHelper(StoryFeedActivity.this);
+            dataBaseHelper.insertStory(story);
+            Toast.makeText(this, "Bookmarked", Toast.LENGTH_SHORT).show();
             return true;
         }
 
